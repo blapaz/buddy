@@ -5,6 +5,11 @@ function Main()
     PrintLine("Hello World")
 }
 
+function e_Control_C() 
+{
+	PrintLine("Clipboard")
+}
+
 function e_Control_W() 
 {
 	PrintLine("Control+W")

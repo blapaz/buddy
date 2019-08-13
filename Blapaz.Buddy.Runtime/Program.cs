@@ -17,7 +17,6 @@ namespace Blapaz.Buddy.Runtime
 
                 Hook.GlobalEvents().OnCombination(new Dictionary<Combination, Action>
                 {
-                    {Combination.FromString("Control+C"), () => { Console.WriteLine("Clipboard"); }},
                     {Combination.FromString(combination), () => { Runtime.Run($"e_{combination.Replace("+", "_")}"); }}
                 });
             }
