@@ -11,10 +11,7 @@ namespace Blapaz.Buddy.Compiler
         public static string Compile(string scriptFile)
         {
             Imports = new List<string>();
-
-            StreamReader sr = new StreamReader(scriptFile);
-            Lexer lexer = new Lexer(sr.ReadToEnd());
-
+            Lexer lexer = new Lexer(File.ReadAllText(scriptFile));
             List<Token> tokens = new List<Token>();
 
             Token token;
@@ -36,10 +33,16 @@ namespace Blapaz.Buddy.Compiler
 
             foreach (string import in Imports)
             {
-                using (StreamReader s = new StreamReader(Path.Combine(Path.GetDirectoryName(scriptFile), import + ".bud")))
+                using (StreamReader s = new StreamReader(Path.Combine(Path.GetDirectoryName(scriptFile), import + ".buddy")))
                 {
                     compiledCode += Environment.NewLine + s.ReadToEnd();
                 }
+            }
+
+            using (FileStream fs = new FileStream(Path.GetFileNameWithoutExtension(scriptFile) + ".buddy", FileMode.Create))
+            using (BinaryWriter bw = new BinaryWriter(fs))
+            {
+                bw.Write(compiledCode);
             }
 
             return compiledCode;

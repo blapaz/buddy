@@ -35,27 +35,22 @@ namespace App
 
                 if (File.Exists(scriptFile))
                 {
-                    if (Path.GetExtension(scriptFile).Equals(".buddy"))
+                    if (Path.GetExtension(scriptFile).Equals(".bud"))
                     {
                         string compiledCode = BuddyCompiler.Compile(scriptFile);
-
-                        if (Config.ShouldOutputCompiled)
-                        {
-                            using (FileStream fs = new FileStream(Path.GetFileNameWithoutExtension(scriptFile) + ".bud", FileMode.Create))
-                            using (BinaryWriter bw = new BinaryWriter(fs))
-                            {
-                                bw.Write(compiledCode);
-                            }
-                        }
 
                         if (!Config.ShouldCompileOnly)
                         {
                             BuddyRuntime.Run(compiledCode);
                         }
                     }
+                    else if (Path.GetExtension(scriptFile).Equals(".buddy"))
+                    {
+                        BuddyRuntime.Run(File.ReadAllText(scriptFile));
+                    }
                     else
                     {
-                        MessageBox.Show("Only files with the *.buddy extension are executable by this app", "Invalid Executable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Only files with the *.bud or *.buddy extensions are executable by this app", "Invalid Executable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
