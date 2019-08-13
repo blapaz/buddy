@@ -1,0 +1,14 @@
+import system
+
+function Main()
+{
+    PrintLine("Hello World")
+}
+
+function e_Control_W() 
+{
+	PrintLine("Control+W")
+	Delay("5000")
+	PrintLine("Screenshot")
+	CaptureScreen("")
+}
