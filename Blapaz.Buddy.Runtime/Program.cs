@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Gma.System.MouseKeyHook;
 
 namespace Blapaz.Buddy.Runtime
@@ -11,13 +10,13 @@ namespace Blapaz.Buddy.Runtime
         {
             Runtime runtime = new Runtime(compiledCode);
 
-            foreach (string e in Runtime.Funcs.Where(x => x.name.StartsWith("e_")).Select(x => x.name).ToList())
+            foreach (Func evnt in Runtime.Events)
             {
-                string combination = e.Substring(2, e.Length - 2).Replace("_", "+");
+                string combination = evnt.name.Replace("_", "+");
 
                 Hook.GlobalEvents().OnCombination(new Dictionary<Combination, Action>
                 {
-                    {Combination.FromString(combination), () => { Runtime.Run($"e_{combination.Replace("+", "_")}"); }}
+                    {Combination.FromString(combination), () => { Runtime.Run($"{combination.Replace("+", "_")}"); }}
                 });
             }
         }

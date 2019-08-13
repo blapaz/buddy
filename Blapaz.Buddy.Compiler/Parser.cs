@@ -47,6 +47,21 @@ namespace Blapaz.Buddy.Compiler
                         currentBlock = func;
                     }
                 }
+                else if (tok.TokenName == Lexer.Tokens.Event)
+                {
+                    Evnt evnt = ParseEvnt();
+
+                    if (currentBlock == null)
+                    {
+                        currentBlock = evnt;
+                    }
+                    else
+                    {
+                        currentBlock.AddStmt(new Return(null));
+                        tree.Add(currentBlock);
+                        currentBlock = evnt;
+                    }
+                }
                 else if (tok.TokenName == Lexer.Tokens.If)
                 {
                     IfBlock ifblock = ParseIf();
@@ -184,6 +199,38 @@ namespace Blapaz.Buddy.Compiler
             }
 
             return new Func(ident, vars);
+        }
+
+        static Evnt ParseEvnt()
+        {
+            string ident = "";
+            List<string> vars = new List<string>();
+
+            if (tokens.Peek().TokenName == Lexer.Tokens.Ident)
+            {
+                ident = tokens.GetToken().TokenValue.ToString();
+            }
+
+            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            {
+                tokens.pos++;
+            }
+
+            if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+            {
+                tokens.pos++;
+            }
+            else
+            {
+                vars = ParseFuncArgs();
+            }
+
+            if (tokens.Peek().TokenName == Lexer.Tokens.LeftBrace)
+            {
+                tokens.pos++;
+            }
+
+            return new Evnt(ident, vars);
         }
 
         static IfBlock ParseIf()

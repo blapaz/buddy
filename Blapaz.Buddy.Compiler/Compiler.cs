@@ -21,6 +21,10 @@ namespace Blapaz.Buddy.Compiler
                 {
                     CompileFunc((Func)s);
                 }
+                else if (s is Evnt)
+                {
+                    CompileEvnt((Evnt)s);
+                }
                 else if (s is IfBlock)
                 {
                     CompileIf((IfBlock)s);
@@ -67,6 +71,18 @@ namespace Blapaz.Buddy.Compiler
         static void CompileFunc(Func data)
         {
             Write(":" + data.ident);
+
+            foreach (string s in data.vars)
+            {
+                Write("setVar " + s);
+            }
+
+            CompileStmtList(data.statements);
+        }
+
+        static void CompileEvnt(Evnt data)
+        {
+            Write("e:" + data.ident);
 
             foreach (string s in data.vars)
             {

@@ -7,8 +7,9 @@ namespace Blapaz.Buddy.Runtime
 {
     class Runtime
     {
-        public static List<Func> Funcs { get; private set; } = new List<Func>();
+        public static List<Func> Events { get; private set; } = new List<Func>();
 
+        private static List<Func> _funcs = new List<Func>();
         private static List<Block> _blocks = new List<Block>();
         private static List<Var> _vars = new List<Var>();
         private static Stack<object> _stack = new Stack<object>();
@@ -21,10 +22,11 @@ namespace Blapaz.Buddy.Runtime
         public Runtime(string input)
         {
             Lexer lexer = new Lexer(input);
-            Funcs = lexer.funcs;
+            Events = lexer.events;
+            _funcs = lexer.funcs;
             _blocks = lexer.blocks;
             _code = lexer.code;
-
+            
             Run("Main");
         }
 
@@ -368,7 +370,7 @@ namespace Blapaz.Buddy.Runtime
         {
             Func func = null;
 
-            foreach (Func f in Funcs)
+            foreach (Func f in _funcs)
             {
                 if (f.name == name)
                 {

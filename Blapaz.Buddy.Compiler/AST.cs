@@ -33,6 +33,18 @@ namespace Blapaz.Buddy.Compiler
         }
     }
 
+    class Evnt : Block
+    {
+        public string ident;
+        public List<string> vars;
+
+        public Evnt(string i, List<string> v)
+        {
+            ident = i;
+            vars = v;
+        }
+    }
+
     class IfBlock : Block
     {
         public Expr leftExpr;

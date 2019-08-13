@@ -7,6 +7,7 @@ namespace Blapaz.Buddy.Runtime
     class Lexer
     {
         public List<Func> funcs = new List<Func>();
+        public List<Func> events = new List<Func>();
         public List<Block> blocks = new List<Block>();
         public Buffer code = new Buffer();
 
@@ -35,6 +36,23 @@ namespace Blapaz.Buddy.Runtime
                         funcs.Add(currentFunc);
                         currentFunc = new Func(op, code.buffer.Count);
                     }
+                }
+                else if (a.StartsWith("e:"))
+                {
+                    string op = a.Substring(2);
+
+                    if (currentFunc == null)
+                    {
+                        currentFunc = new Func(op, code.buffer.Count);
+                    }
+                    else
+                    {
+                        code.Write(Opcodes.ret);
+                        funcs.Add(currentFunc);
+                        currentFunc = new Func(op, code.buffer.Count);
+                    }
+
+                    events.Add(currentFunc);
                 }
                 else if (a.StartsWith("."))
                 {
