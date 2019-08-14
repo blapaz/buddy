@@ -4,22 +4,26 @@ using System.Windows.Forms;
 using System.Drawing;
 using BuddyCompiler = Blapaz.Buddy.Compiler.Program;
 using BuddyRuntime = Blapaz.Buddy.Runtime.Program;
+using System.Diagnostics;
 
 namespace App
 {
     public partial class FormMain : Form
     {
-        private NotifyIcon notifyIcon;
+        private NotifyIcon _notifyIcon;
+        private Config _config;
 
         public FormMain()
         {
-            notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            notifyIcon.Text = "Buddy";
-            notifyIcon.BalloonTipTitle = "Buddy";
-            notifyIcon.BalloonTipText = "Buddy is running in the background";
-            notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-            notifyIcon.ContextMenuStrip.Items.Add("Exit", null, this.NotifyIconExit_Click); 
+            _notifyIcon = new NotifyIcon();
+            _notifyIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            _notifyIcon.Text = "Buddy";
+            _notifyIcon.BalloonTipTitle = "Buddy";
+            _notifyIcon.BalloonTipText = "Buddy is running in the background";
+            _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
+            _notifyIcon.ContextMenuStrip.Items.Add("Config", null, NotifyIconConfig_Click);
+            _notifyIcon.ContextMenuStrip.Items.Add("Exit", null, NotifyIconExit_Click);
+
             InitializeComponent();
 
             string[] args = Environment.GetCommandLineArgs();
@@ -32,6 +36,7 @@ namespace App
             {
                 string exePath = args[0];
                 string scriptFile = args[1];
+                _config = new Config(Path.Combine(Path.GetDirectoryName(scriptFile), "buddy.cfg"));
 
                 if (File.Exists(scriptFile))
                 {
@@ -39,7 +44,16 @@ namespace App
                     {
                         string compiledCode = BuddyCompiler.Compile(scriptFile);
 
-                        if (!Config.ShouldCompileOnly)
+                        if (_config.ShouldOutputCompiled)
+                        {
+                            using (FileStream fs = new FileStream(Path.GetFileNameWithoutExtension(scriptFile) + ".buddy", FileMode.Create))
+                            using (BinaryWriter bw = new BinaryWriter(fs))
+                            {
+                                bw.Write(compiledCode);
+                            }
+                        }
+
+                        if (!_config.ShouldCompileOnly)
                         {
                             BuddyRuntime.Run(compiledCode);
                         }
@@ -60,14 +74,30 @@ namespace App
             }
         }
 
-        void NotifyIconExit_Click(object sender, EventArgs e) => Application.Exit();
+        private void NotifyIconExit_Click(object sender, EventArgs e) => Application.Exit();
+        private void NotifyIconConfig_Click(object sender, EventArgs e) => ModifyConfigFile();
+
+        private void ModifyConfigFile()
+        {
+            if (!File.Exists(_config.ConfigFile))
+            {
+                File.Create(_config.ConfigFile);
+            }
+
+            MessageBox.Show("Be sure to restart application after making changes to config file", "Restart After Changes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Process.Start(_config.ConfigFile);
+        }
 
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
             this.Visible = false;
-            notifyIcon.Visible = true;
-            notifyIcon.ShowBalloonTip(2000);
+            _notifyIcon.Visible = true;
+
+            if (!_config.ShouldSilentStart)
+            {
+                _notifyIcon.ShowBalloonTip(2000);
+            }
         }
     }
 }

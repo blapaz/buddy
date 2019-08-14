@@ -3,31 +3,32 @@ using System.IO;
 
 namespace App
 {
-    class Config
+    public class Config
     {
-        public static string ExecutablePath { get; private set; }
-        public static string ConfigFilePath { get; private set; }
-        public static string ScriptsDirectory { get; private set; }
-        public static bool ShouldCompileOnly { get; private set; }
-        public static bool ShouldOutputCompiled { get; private set; }
+        public string ExecutablePath { get; private set; }
+        public string ConfigFile { get; private set; }
+        public bool ShouldCompileOnly { get; private set; }
+        public bool ShouldOutputCompiled { get; private set; }
+        public bool ShouldSilentStart { get; private set; }
 
-        static Config()
+        public Config(string configFile)
         {
             ExecutablePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
             // Default values set here, overridable via config
-            ScriptsDirectory = ExecutablePath;
+            ConfigFile = configFile;
             ShouldCompileOnly = false;
-            ShouldOutputCompiled = true;
+            ShouldOutputCompiled = false;
+            ShouldSilentStart = false;
 
             Read();
         }
 
-        private static void Read()
+        private void Read()
         {
-            if (File.Exists(ConfigFilePath))
+            if (File.Exists(ConfigFile))
             {
-                string[] lines = File.ReadAllLines(ConfigFilePath);
+                string[] lines = File.ReadAllLines(ConfigFile);
 
                 foreach (string line in lines)
                 {
@@ -38,17 +39,13 @@ namespace App
             }
         }
 
-        private static void Assign(string name, string value)
+        private void Assign(string name, string value)
         {
             name = name.ToLower().Trim();
             value = value.Trim();
 
             switch (name)
             {
-                case "scripts-dir":
-                    if (IsValidDirectory(value))
-                        ScriptsDirectory = value;
-                    break;
                 case "compile-only":
                     if (IsValidBoolean(value))
                         ShouldCompileOnly = Convert.ToBoolean(value);
@@ -57,12 +54,16 @@ namespace App
                     if (IsValidBoolean(value))
                         ShouldOutputCompiled = Convert.ToBoolean(value);
                     break;
+                case "silent-start":
+                    if (IsValidBoolean(value))
+                        ShouldSilentStart = Convert.ToBoolean(value);
+                    break;
                 default:
                     break;
             }
         }
 
-        public static bool IsValidDirectory(string value)
+        public bool IsValidDirectory(string value)
         {
             if (Directory.Exists(value))
                 return true;
@@ -70,7 +71,7 @@ namespace App
             return false;
         }
 
-        public static bool IsValidBoolean(string value)
+        public bool IsValidBoolean(string value)
         {
             string val = value.ToLower();
 

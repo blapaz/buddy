@@ -39,12 +39,6 @@ namespace Blapaz.Buddy.Compiler
                 }
             }
 
-            using (FileStream fs = new FileStream(Path.GetFileNameWithoutExtension(scriptFile) + ".buddy", FileMode.Create))
-            using (BinaryWriter bw = new BinaryWriter(fs))
-            {
-                bw.Write(compiledCode);
-            }
-
             return compiledCode;
         }
     }
