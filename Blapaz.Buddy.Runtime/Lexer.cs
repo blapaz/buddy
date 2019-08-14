@@ -103,6 +103,14 @@ namespace Blapaz.Buddy.Runtime
                 {
                     code.Write(Opcodes.captureScreen);
                 }
+                else if (a == "getClipboard")
+                {
+                    code.Write(Opcodes.getClipboard);
+                }
+                else if (a == "setClipboard")
+                {
+                    code.Write(Opcodes.setClipboard);
+                }
                 else if (a == "inputInt32")
                 {
                     code.Write(Opcodes.inputInt32);

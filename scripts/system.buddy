@@ -19,3 +19,9 @@ ret
 :Delay
 delay
 ret
+:GetClipboard
+getClipboard
+ret
+:SetClipboard
+setClipboard
+ret

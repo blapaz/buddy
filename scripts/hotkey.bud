@@ -17,3 +17,10 @@ event Control_W()
 	PrintLine("Screenshot")
 	CaptureScreen("")
 }
+
+event Control_Q() 
+{
+	call Control_C()
+	clip = GetClipboard()
+	SetClipboard(clip + "2")
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using Blapaz.Buddy.Runtime.Utilities;
 
 namespace Blapaz.Buddy.Runtime
@@ -95,6 +96,14 @@ namespace Blapaz.Buddy.Runtime
                         }
 
                         Screenshot.CaptureAndOpen($"{value}.jpg", ImageFormat.Jpeg);
+                    }
+                    else if (opcode == Opcodes.getClipboard)
+                    {
+                        _stack.Push(Clipboard.GetText());
+                    }
+                    else if (opcode == Opcodes.setClipboard)
+                    {
+                        Clipboard.SetText(_stack.Pop().ToString());
                     }
                     else if (opcode == Opcodes.inputInt32)
                     {
