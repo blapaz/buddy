@@ -51,7 +51,7 @@ When this script is executed:
   - Pressing Control and C will run ```Control_C()```
   - Pressing Control and W will run ```Control_W()```.
 
-_For more examples, please refer to the [scripts folder](https://github.com/blapaz/buddy/tree/master/scripts) in the project_
+_For more examples and useful scripts, please refer to the [buddy-scripts repo](https://github.com/blapaz/buddy-scripts)_
 
 ## Roadmap
 
