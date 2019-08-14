@@ -15,21 +15,21 @@ namespace Blapaz.Buddy.Compiler
             List<Token> tokens = new List<Token>();
 
             Token token;
-            while ((token = lexer.GetToken()).TokenName != Lexer.Tokens.EOF)
+            while ((token = lexer.GetToken()).Name != Lexer.TokenType.EOF)
             {
-                if (token.TokenName != Lexer.Tokens.Whitespace && token.TokenName != Lexer.Tokens.NewLine && token.TokenName != Lexer.Tokens.Undefined)
+                if (token.Name != Lexer.TokenType.Whitespace && token.Name != Lexer.TokenType.NewLine && token.Name != Lexer.TokenType.Undefined)
                 {
                     tokens.Add(token);
                 }
             }
 
-            tokens.Add(new Token(Lexer.Tokens.EOF, "EOF"));
+            tokens.Add(new Token(Lexer.TokenType.EOF, "EOF"));
 
             Parser parser = new Parser(new TokenList(tokens));
             List<Stmt> tree = parser.GetTree();
 
             Compiler compiler = new Compiler(tree);
-            string compiledCode = compiler.GetCode();
+            string compiledCode = compiler.Code;
 
             foreach (string import in Imports)
             {

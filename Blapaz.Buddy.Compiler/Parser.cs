@@ -5,262 +5,262 @@ namespace Blapaz.Buddy.Compiler
 {
     class Parser
     {
-        static TokenList tokens;
-        static Block currentBlock;
-        static Stack<Block> blockstack;
-        static List<Stmt> tree;
-        static bool running;
+        private TokenList _tokens;
+        private Block _currentBlock;
+        private Stack<Block> _blockstack;
+        private List<Stmt> _tree;
+        private bool _isRunning;
 
-        public Parser(TokenList t)
+        public Parser(TokenList tokenList)
         {
-            tokens = t;
-            currentBlock = null;
-            blockstack = new Stack<Block>();
-            Token tok = null;
-            tree = new List<Stmt>();
-            running = true;
+            _tokens = tokenList;
+            _currentBlock = null;
+            _blockstack = new Stack<Block>();
+            _tree = new List<Stmt>();
+            _isRunning = true;
+            Token token = null;
 
-            while (running)
+            while (_isRunning)
             {
                 try
                 {
-                    tok = tokens.GetToken();
+                    token = _tokens.GetToken();
                 }
                 catch { }
 
-                if (tok.TokenName == Lexer.Tokens.Import)
+                if (token.Name == Lexer.TokenType.Import)
                 {
                     Program.Imports.Add(ParseImport());
                 }
-                else if (tok.TokenName == Lexer.Tokens.Function)
+                else if (token.Name == Lexer.TokenType.Function)
                 {
                     Func func = ParseFunc();
 
-                    if (currentBlock == null)
+                    if (_currentBlock == null)
                     {
-                        currentBlock = func;
+                        _currentBlock = func;
                     }
                     else
                     {
-                        currentBlock.AddStmt(new Return(null));
-                        tree.Add(currentBlock);
-                        currentBlock = func;
+                        _currentBlock.AddStmt(new Return(null));
+                        _tree.Add(_currentBlock);
+                        _currentBlock = func;
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.Event)
+                else if (token.Name == Lexer.TokenType.Event)
                 {
                     Evnt evnt = ParseEvnt();
 
-                    if (currentBlock == null)
+                    if (_currentBlock == null)
                     {
-                        currentBlock = evnt;
+                        _currentBlock = evnt;
                     }
                     else
                     {
-                        currentBlock.AddStmt(new Return(null));
-                        tree.Add(currentBlock);
-                        currentBlock = evnt;
+                        _currentBlock.AddStmt(new Return(null));
+                        _tree.Add(_currentBlock);
+                        _currentBlock = evnt;
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.If)
+                else if (token.Name == Lexer.TokenType.If)
                 {
                     IfBlock ifblock = ParseIf();
 
-                    if (currentBlock != null)
+                    if (_currentBlock != null)
                     {
-                        blockstack.Push(currentBlock);
-                        currentBlock = ifblock;
+                        _blockstack.Push(_currentBlock);
+                        _currentBlock = ifblock;
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.ElseIf)
+                else if (token.Name == Lexer.TokenType.ElseIf)
                 {
                     ElseIfBlock elseifblock = ParseElseIf();
 
-                    if (currentBlock != null)
+                    if (_currentBlock != null)
                     {
-                        blockstack.Push(currentBlock);
-                        currentBlock = elseifblock;
+                        _blockstack.Push(_currentBlock);
+                        _currentBlock = elseifblock;
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.Else)
+                else if (token.Name == Lexer.TokenType.Else)
                 {
-                    if (currentBlock != null)
+                    if (_currentBlock != null)
                     {
-                        blockstack.Push(currentBlock);
-                        currentBlock = new ElseBlock();
+                        _blockstack.Push(_currentBlock);
+                        _currentBlock = new ElseBlock();
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.Repeat)
+                else if (token.Name == Lexer.TokenType.Repeat)
                 {
-                    if (currentBlock != null)
+                    if (_currentBlock != null)
                     {
-                        blockstack.Push(currentBlock);
-                        currentBlock = new RepeatBlock();
+                        _blockstack.Push(_currentBlock);
+                        _currentBlock = new RepeatBlock();
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.Ident)
+                else if (token.Name == Lexer.TokenType.Ident)
                 {
-                    if (tokens.Peek().TokenName == Lexer.Tokens.Equal)
+                    if (_tokens.Peek().Name == Lexer.TokenType.Equal)
                     {
-                        tokens.pos--;
+                        _tokens.pos--;
                         Assign a = ParseAssign();
-                        currentBlock.AddStmt(a);
+                        _currentBlock.AddStmt(a);
                     }
-                    else if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+                    else if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
                     {
-                        tokens.pos--;
+                        _tokens.pos--;
                         Call c = ParseCall();
-                        currentBlock.AddStmt(c);
+                        _currentBlock.AddStmt(c);
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.Return)
+                else if (token.Name == Lexer.TokenType.Return)
                 {
                     Return r = ParseReturn();
-                    currentBlock.AddStmt(r);
+                    _currentBlock.AddStmt(r);
                 }
-                else if (tok.TokenName == Lexer.Tokens.RightParan)
+                else if (token.Name == Lexer.TokenType.RightParan)
                 {
-                    if (currentBlock is Func)
+                    if (_currentBlock is Func)
                     {
-                        currentBlock.AddStmt(new Return(null));
-                        tree.Add(currentBlock);
-                        currentBlock = null;
+                        _currentBlock.AddStmt(new Return(null));
+                        _tree.Add(_currentBlock);
+                        _currentBlock = null;
                     }
-                    else if (currentBlock is IfBlock || currentBlock is ElseIfBlock || currentBlock is ElseBlock)
+                    else if (_currentBlock is IfBlock || _currentBlock is ElseIfBlock || _currentBlock is ElseBlock)
                     {
-                        currentBlock.AddStmt(new EndIf());
-                        Block block = currentBlock;
+                        _currentBlock.AddStmt(new EndIf());
+                        Block block = _currentBlock;
 
-                        if (blockstack.Count > 0)
+                        if (_blockstack.Count > 0)
                         {
-                            currentBlock = blockstack.Pop();
-                            currentBlock.AddStmt(block);
+                            _currentBlock = _blockstack.Pop();
+                            _currentBlock.AddStmt(block);
                         }
                     }
-                    else if (currentBlock is RepeatBlock)
+                    else if (_currentBlock is RepeatBlock)
                     {
-                        Block block = currentBlock;
+                        Block block = _currentBlock;
 
-                        if (blockstack.Count > 0)
+                        if (_blockstack.Count > 0)
                         {
-                            currentBlock = blockstack.Pop();
-                            currentBlock.AddStmt(block);
+                            _currentBlock = _blockstack.Pop();
+                            _currentBlock.AddStmt(block);
                         }
                     }
                 }
-                else if (tok.TokenName == Lexer.Tokens.EOF)
+                else if (token.Name == Lexer.TokenType.EOF)
                 {
-                    tree.Add(currentBlock);
-                    running = false;
+                    _tree.Add(_currentBlock);
+                    _isRunning = false;
                 }
             }
         }
 
-        static string ParseImport()
+        private string ParseImport()
         {
             string ret = "";
-            Token t = tokens.GetToken();
+            Token token = _tokens.GetToken();
 
-            if (t.TokenName == Lexer.Tokens.Ident)
+            if (token.Name == Lexer.TokenType.Ident)
             {
-                ret = t.TokenValue;
+                ret = token.Value;
             }
 
             return ret;
         }
 
-        static Func ParseFunc()
+        private Func ParseFunc()
         {
             string ident = "";
             List<string> vars = new List<string>();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.Ident)
+            if (_tokens.Peek().Name == Lexer.TokenType.Ident)
             {
-                ident = tokens.GetToken().TokenValue.ToString();
+                ident = _tokens.GetToken().Value.ToString();
             }
             
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
             else
             {
                 vars = ParseFuncArgs();
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftBrace)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftBrace)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             return new Func(ident, vars);
         }
 
-        static Evnt ParseEvnt()
+        private Evnt ParseEvnt()
         {
             string ident = "";
             List<string> vars = new List<string>();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.Ident)
+            if (_tokens.Peek().Name == Lexer.TokenType.Ident)
             {
-                ident = tokens.GetToken().TokenValue.ToString();
+                ident = _tokens.GetToken().Value.ToString();
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
             else
             {
                 vars = ParseFuncArgs();
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftBrace)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftBrace)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             return new Evnt(ident, vars);
         }
 
-        static IfBlock ParseIf()
+        private IfBlock ParseIf()
         {
             IfBlock ret = null;
             Symbol op = 0;
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             Expr lexpr = ParseExpr();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.DoubleEqual)
+            if (_tokens.Peek().Name == Lexer.TokenType.DoubleEqual)
             {
                 op = Symbol.doubleEqual;
-                tokens.pos++;
+                _tokens.pos++;
             }
-            else if (tokens.Peek().TokenName == Lexer.Tokens.NotEqual)
+            else if (_tokens.Peek().Name == Lexer.TokenType.NotEqual)
             {
                 op = Symbol.notEqual;
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             Expr rexpr = ParseExpr();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             ret = new IfBlock(lexpr, op, rexpr);
@@ -268,34 +268,34 @@ namespace Blapaz.Buddy.Compiler
             return ret;
         }
 
-        static ElseIfBlock ParseElseIf()
+        private ElseIfBlock ParseElseIf()
         {
             ElseIfBlock ret = null;
             Symbol op = 0;
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             Expr lexpr = ParseExpr();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.DoubleEqual)
+            if (_tokens.Peek().Name == Lexer.TokenType.DoubleEqual)
             {
                 op = Symbol.doubleEqual;
-                tokens.pos++;
+                _tokens.pos++;
             }
-            else if (tokens.Peek().TokenName == Lexer.Tokens.NotEqual)
+            else if (_tokens.Peek().Name == Lexer.TokenType.NotEqual)
             {
                 op = Symbol.notEqual;
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             Expr rexpr = ParseExpr();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
             ret = new ElseIfBlock(lexpr, op, rexpr);
@@ -303,15 +303,15 @@ namespace Blapaz.Buddy.Compiler
             return ret;
         }
 
-        static Assign ParseAssign()
+        private Assign ParseAssign()
         {
             Assign ret = null;
             string ident = "";
 
-            Token t = tokens.GetToken();
-            ident = t.TokenValue.ToString();
+            Token token = _tokens.GetToken();
+            ident = token.Value.ToString();
 
-            tokens.pos++;
+            _tokens.pos++;
 
             Expr value = ParseExpr();
 
@@ -320,25 +320,25 @@ namespace Blapaz.Buddy.Compiler
             return ret;
         }
 
-        static Call ParseCall()
+        private Call ParseCall()
         {
             string ident = "";
-            Token tok = tokens.GetToken();
+            Token token = _tokens.GetToken();
             List<Expr> args = new List<Expr>();
 
-            if (tok.TokenName == Lexer.Tokens.Ident)
+            if (token.Name == Lexer.TokenType.Ident)
             {
-                ident = tok.TokenValue.ToString();
+                ident = token.Value.ToString();
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
             {
-                tokens.pos++;
+                _tokens.pos++;
             }
             else
             {
@@ -348,28 +348,28 @@ namespace Blapaz.Buddy.Compiler
             return new Call(ident, args);
         }
 
-        static Return ParseReturn()
+        private Return ParseReturn()
         {
             return new Return(ParseExpr());
         }
 
-        static Expr ParseExpr()
+        private Expr ParseExpr()
         {
             Expr ret = null;
-            Token t = tokens.GetToken();
+            Token token = _tokens.GetToken();
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.LeftParan)
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
             {
                 string ident = "";
 
-                if (t.TokenName == Lexer.Tokens.Ident)
+                if (token.Name == Lexer.TokenType.Ident)
                 {
-                    ident = t.TokenValue.ToString();
+                    ident = token.Value.ToString();
                 }
 
-                tokens.pos++;
+                _tokens.pos++;
 
-                if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+                if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
                 {
                     ret = new CallExpr(ident, new List<Expr>());
                 }
@@ -378,55 +378,55 @@ namespace Blapaz.Buddy.Compiler
                     ret = new CallExpr(ident, ParseCallArgs());
                 }
             }
-            else if (t.TokenName == Lexer.Tokens.IntLiteral)
+            else if (token.Name == Lexer.TokenType.IntLiteral)
             {
-                IntLiteral i = new IntLiteral(Convert.ToInt32(t.TokenValue.ToString()));
+                IntLiteral i = new IntLiteral(Convert.ToInt32(token.Value.ToString()));
                 ret = i;
             }
-            else if (t.TokenName == Lexer.Tokens.StringLiteral)
+            else if (token.Name == Lexer.TokenType.StringLiteral)
             {
-                StringLiteral s = new StringLiteral(t.TokenValue.ToString());
+                StringLiteral s = new StringLiteral(token.Value.ToString());
                 ret = s;
             }
-            else if (t.TokenName == Lexer.Tokens.Ident)
+            else if (token.Name == Lexer.TokenType.Ident)
             {
-                string ident = t.TokenValue.ToString();
+                string ident = token.Value.ToString();
 
                 Ident i = new Ident(ident);
                 ret = i;
             }
-            else if (t.TokenName == Lexer.Tokens.LeftParan)
+            else if (token.Name == Lexer.TokenType.LeftParan)
             {
                 Expr e = ParseExpr();
 
-                if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+                if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                 }
 
                 ParanExpr p = new ParanExpr(e);
 
-                if (tokens.Peek().TokenName == Lexer.Tokens.Add)
+                if (_tokens.Peek().Name == Lexer.TokenType.Add)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                     Expr expr = ParseExpr();
                     ret = new MathExpr(p, Symbol.add, expr);
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.Sub)
+                else if (_tokens.Peek().Name == Lexer.TokenType.Sub)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                     Expr expr = ParseExpr();
                     ret = new MathExpr(p, Symbol.sub, expr);
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.Mul)
+                else if (_tokens.Peek().Name == Lexer.TokenType.Mul)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                     Expr expr = ParseExpr();
                     ret = new MathExpr(p, Symbol.mul, expr);
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.Div)
+                else if (_tokens.Peek().Name == Lexer.TokenType.Div)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                     Expr expr = ParseExpr();
                     ret = new MathExpr(p, Symbol.div, expr);
                 }
@@ -436,29 +436,29 @@ namespace Blapaz.Buddy.Compiler
                 }
             }
 
-            if (tokens.Peek().TokenName == Lexer.Tokens.Add || tokens.Peek().TokenName == Lexer.Tokens.Sub || tokens.Peek().TokenName == Lexer.Tokens.Mul || tokens.Peek().TokenName == Lexer.Tokens.Div)
+            if (_tokens.Peek().Name == Lexer.TokenType.Add || _tokens.Peek().Name == Lexer.TokenType.Sub || _tokens.Peek().Name == Lexer.TokenType.Mul || _tokens.Peek().Name == Lexer.TokenType.Div)
             {
                 Expr lexpr = ret;
                 Symbol op = 0;
 
-                if (tokens.Peek().TokenName == Lexer.Tokens.Add)
+                if (_tokens.Peek().Name == Lexer.TokenType.Add)
                 {
                     op = Symbol.add;
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.Sub)
+                else if (_tokens.Peek().Name == Lexer.TokenType.Sub)
                 {
                     op = Symbol.sub;
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.Mul)
+                else if (_tokens.Peek().Name == Lexer.TokenType.Mul)
                 {
                     op = Symbol.mul;
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.Div)
+                else if (_tokens.Peek().Name == Lexer.TokenType.Div)
                 {
                     op = Symbol.div;
                 }
 
-                tokens.pos++;
+                _tokens.pos++;
 
                 Expr rexpr = ParseExpr();
 
@@ -468,26 +468,26 @@ namespace Blapaz.Buddy.Compiler
             return ret;
         }
 
-        static List<string> ParseFuncArgs()
+        private List<string> ParseFuncArgs()
         {
             List<string> ret = new List<string>();
 
             while (true)
             {
-                Token tok = tokens.GetToken();
+                Token token = _tokens.GetToken();
 
-                if (tok.TokenName == Lexer.Tokens.Ident)
+                if (token.Name == Lexer.TokenType.Ident)
                 {
-                    ret.Add(tok.TokenValue.ToString());
+                    ret.Add(token.Value.ToString());
                 }
 
-                if (tokens.Peek().TokenName == Lexer.Tokens.Comma)
+                if (_tokens.Peek().Name == Lexer.TokenType.Comma)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+                else if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                     break;
                 }
             }
@@ -495,7 +495,7 @@ namespace Blapaz.Buddy.Compiler
             return ret;
         }
 
-        static List<Expr> ParseCallArgs()
+        private List<Expr> ParseCallArgs()
         {
             List<Expr> ret = new List<Expr>();
 
@@ -503,13 +503,13 @@ namespace Blapaz.Buddy.Compiler
             {
                 ret.Add(ParseExpr());
 
-                if (tokens.Peek().TokenName == Lexer.Tokens.Comma)
+                if (_tokens.Peek().Name == Lexer.TokenType.Comma)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                 }
-                else if (tokens.Peek().TokenName == Lexer.Tokens.RightParan)
+                else if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
                 {
-                    tokens.pos++;
+                    _tokens.pos++;
                     break;
                 }
             }
@@ -519,7 +519,7 @@ namespace Blapaz.Buddy.Compiler
 
         public List<Stmt> GetTree()
         {
-            return tree;
+            return _tree;
         }
     }
 }

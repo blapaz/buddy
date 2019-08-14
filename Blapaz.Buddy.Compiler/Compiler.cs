@@ -4,71 +4,71 @@ namespace Blapaz.Buddy.Compiler
 {
     class Compiler
     {
-        static string code;
-        static int repeats = 0;
+        public string Code { get; private set; }
+        private int repeats = 0;
 
         public Compiler(List<Stmt> list)
         {
-            code = "";
+            Code = "";
             CompileStmtList(list);
         }
         
-        static void CompileStmtList(List<Stmt> statements)
+        private void CompileStmtList(List<Stmt> statements)
         {
-            foreach (Stmt s in statements)
+            foreach (Stmt statement in statements)
             {
-                if (s is Func)
+                if (statement is Func)
                 {
-                    CompileFunc((Func)s);
+                    CompileFunc((Func)statement);
                 }
-                else if (s is Evnt)
+                else if (statement is Evnt)
                 {
-                    CompileEvnt((Evnt)s);
+                    CompileEvnt((Evnt)statement);
                 }
-                else if (s is IfBlock)
+                else if (statement is IfBlock)
                 {
-                    CompileIf((IfBlock)s);
+                    CompileIf((IfBlock)statement);
                 }
-                else if (s is ElseIfBlock)
+                else if (statement is ElseIfBlock)
                 {
-                    CompileElseIf((ElseIfBlock)s);
+                    CompileElseIf((ElseIfBlock)statement);
                 }
-                else if (s is ElseBlock)
+                else if (statement is ElseBlock)
                 {
-                    CompileElse((ElseBlock)s);
+                    CompileElse((ElseBlock)statement);
                 }
-                else if (s is EndIf)
+                else if (statement is EndIf)
                 {
                     Write("endif");
                 }
-                else if (s is RepeatBlock)
+                else if (statement is RepeatBlock)
                 {
-                    CompileRepeat((RepeatBlock)s);
+                    CompileRepeat((RepeatBlock)statement);
                 }
-                else if (s is Assign)
+                else if (statement is Assign)
                 {
-                    CompileAssign((Assign)s);
+                    CompileAssign((Assign)statement);
                 }
-                else if (s is Call)
+                else if (statement is Call)
                 {
-                    CompileCall((Call)s);
+                    CompileCall((Call)statement);
                 }
-                else if (s is Return)
+                else if (statement is Return)
                 {
-                    if (((Return)s).expr == null)
+                    if (((Return)statement).expr == null)
                     {
                         Write("ret");
                     }
                     else
                     {
-                        CompileExpr(((Return)s).expr);
+                        CompileExpr(((Return)statement).expr);
                         Write("ret");
                     }
                 }
             }
         }
 
-        static void CompileFunc(Func data)
+        private void CompileFunc(Func data)
         {
             Write(":" + data.ident);
 
@@ -80,7 +80,7 @@ namespace Blapaz.Buddy.Compiler
             CompileStmtList(data.statements);
         }
 
-        static void CompileEvnt(Evnt data)
+        private void CompileEvnt(Evnt data)
         {
             Write("e:" + data.ident);
 
@@ -92,7 +92,7 @@ namespace Blapaz.Buddy.Compiler
             CompileStmtList(data.statements);
         }
 
-        static void CompileIf(IfBlock data)
+        private void CompileIf(IfBlock data)
         {
             CompileExpr(data.leftExpr);
             CompileExpr(data.rightExpr);
@@ -109,7 +109,7 @@ namespace Blapaz.Buddy.Compiler
             CompileStmtList(data.statements);
         }
 
-        static void CompileElseIf(ElseIfBlock data)
+        private void CompileElseIf(ElseIfBlock data)
         {
             CompileExpr(data.leftExpr);
             CompileExpr(data.rightExpr);
@@ -126,13 +126,13 @@ namespace Blapaz.Buddy.Compiler
             CompileStmtList(data.statements);
         }
 
-        static void CompileElse(ElseBlock data)
+        private void CompileElse(ElseBlock data)
         {
             Write("else");
             CompileStmtList(data.statements);
         }
 
-        static void CompileRepeat(RepeatBlock data)
+        private void CompileRepeat(RepeatBlock data)
         {
             string name = ".repeat" + repeats.ToString();
             repeats++;
@@ -141,13 +141,13 @@ namespace Blapaz.Buddy.Compiler
             Write("goto " + name);
         }
 
-        static void CompileAssign(Assign data)
+        private void CompileAssign(Assign data)
         {
             CompileExpr(data.value);
             Write("setVar " + data.ident);
         }
 
-        static void CompileCall(Call data)
+        private void CompileCall(Call data)
         {
             data.args.Reverse();
 
@@ -159,7 +159,7 @@ namespace Blapaz.Buddy.Compiler
             Write("call " + data.ident);
         }
 
-        static void CompileExpr(Expr data)
+        private void CompileExpr(Expr data)
         {
             if (data is IntLiteral)
             {
@@ -210,21 +210,16 @@ namespace Blapaz.Buddy.Compiler
             }
         }
 
-        static void Write(string data)
+        private void Write(string data)
         {
-            if (code == "")
+            if (Code == "")
             {
-                code += data;
+                Code += data;
             }
             else
             {
-                code += "\n" + data;
+                Code += "\n" + data;
             }
-        }
-
-        public string GetCode()
-        {
-            return code;
         }
     }
 }
