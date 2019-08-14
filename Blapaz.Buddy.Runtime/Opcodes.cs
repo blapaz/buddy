@@ -34,5 +34,6 @@
         public static readonly int captureScreen = 28;
         public static readonly int getClipboard = 29;
         public static readonly int setClipboard = 30;
+        public static readonly int write = 31;
     }
 }

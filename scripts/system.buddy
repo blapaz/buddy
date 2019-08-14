@@ -25,3 +25,6 @@ ret
 :SetClipboard
 setClipboard
 ret
+:Write
+write
+ret

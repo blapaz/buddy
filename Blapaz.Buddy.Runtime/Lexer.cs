@@ -111,6 +111,10 @@ namespace Blapaz.Buddy.Runtime
                 {
                     code.Write(Opcodes.setClipboard);
                 }
+                else if (a == "write")
+                {
+                    code.Write(Opcodes.write);
+                }
                 else if (a == "inputInt32")
                 {
                     code.Write(Opcodes.inputInt32);

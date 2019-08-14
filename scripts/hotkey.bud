@@ -21,6 +21,11 @@ event Control_W()
 event Control_Q() 
 {
 	call Control_C()
-	clip = GetClipboard()
-	SetClipboard(clip + "2")
+	
+	cb = GetClipboard()
+	cb2 = cb + "2"
+	SetClipboard(cb2)
+	
+	clipboard = GetClipboard()
+	Write(clipboard)
 }

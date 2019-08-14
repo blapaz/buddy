@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using Blapaz.Buddy.Runtime.Utilities;
+using WindowsInput;
 
 namespace Blapaz.Buddy.Runtime
 {
@@ -19,7 +20,9 @@ namespace Blapaz.Buddy.Runtime
         private static Func _currentFunc = null;
         private static Stack<Call> _callstack = new Stack<Call>();
         private static bool _ifWorked = false;
-    
+
+        private static InputSimulator _inputSimulator = new InputSimulator();
+
         public Runtime(string input)
         {
             Lexer lexer = new Lexer(input);
@@ -108,6 +111,10 @@ namespace Blapaz.Buddy.Runtime
                     else if (opcode == Opcodes.inputInt32)
                     {
                         _stack.Push(Convert.ToInt32(Console.ReadLine()));
+                    }
+                    else if (opcode == Opcodes.write)
+                    {
+                        _inputSimulator.Keyboard.TextEntry(_stack.Pop().ToString());
                     }
                     else if (opcode == Opcodes.inputString)
                     {
