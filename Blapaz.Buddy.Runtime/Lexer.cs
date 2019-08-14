@@ -5,165 +5,119 @@ using System.Linq;
 namespace Blapaz.Buddy.Runtime
 {
     class Lexer
-    {
-        public List<Func> funcs = new List<Func>();
-        public List<Func> events = new List<Func>();
-        public List<Block> blocks = new List<Block>();
-        public Buffer code = new Buffer();
+    {     
+        public List<Func> Events { get; private set; } = new List<Func>();
+        public List<Func> Funcs { get; private set; } = new List<Func>();
+        public List<Block> Blocks { get; private set; } = new List<Block>();
+        public Buffer Code { get; private set; } = new Buffer();
 
-        public Lexer(string c)
+        public Lexer(string compiledCode)
         {
-            c = c.Replace(((char)13).ToString(), "");
-
             Func currentFunc = null;
             Block currentBlock = null;
             int blockNumber = 0;
             Stack<Block> blockstack = new Stack<Block>();
 
-            foreach (string a in c.Split('\n'))
+            foreach (string line in compiledCode.Replace(((char)13).ToString(), "").Split('\n'))
             {
-                if (a.StartsWith(":"))
+                if (line.StartsWith(":"))
                 {
-                    string op = a.Substring(1);
+                    string op = line.Substring(1);
 
                     if (currentFunc == null)
                     {
-                        currentFunc = new Func(op, code.buffer.Count);
+                        currentFunc = new Func(op, Code.buffer.Count);
                     }
                     else
                     {
-                        code.Write(Opcodes.ret);
-                        funcs.Add(currentFunc);
-                        currentFunc = new Func(op, code.buffer.Count);
+                        Code.Write(Opcodes.ret);
+                        Funcs.Add(currentFunc);
+                        currentFunc = new Func(op, Code.buffer.Count);
                     }
                 }
-                else if (a.StartsWith("e:"))
+                else if (line.StartsWith("e:"))
                 {
-                    string op = a.Substring(2);
+                    string op = line.Substring(2);
 
                     if (currentFunc == null)
                     {
-                        currentFunc = new Func(op, code.buffer.Count);
+                        currentFunc = new Func(op, Code.buffer.Count);
                     }
                     else
                     {
-                        code.Write(Opcodes.ret);
-                        funcs.Add(currentFunc);
-                        currentFunc = new Func(op, code.buffer.Count);
+                        Code.Write(Opcodes.ret);
+                        Funcs.Add(currentFunc);
+                        currentFunc = new Func(op, Code.buffer.Count);
                     }
 
-                    events.Add(currentFunc);
+                    Events.Add(currentFunc);
                 }
-                else if (a.StartsWith("."))
+                else if (line.StartsWith("."))
                 {
-                    string name = a.Substring(1);
-                    Label l = new Label(name, code.buffer.Count());
+                    string name = line.Substring(1);
+                    Label l = new Label(name, Code.buffer.Count());
                     currentFunc.labels.Add(l);
                 }
-                else if (a.StartsWith("pushInt "))
+                else if (line.StartsWith("pushInt "))
                 {
-                    int value = Convert.ToInt32(a.Substring(10));
-                    code.Write(Opcodes.pushInt);
-                    code.Write(value);
+                    int value = Convert.ToInt32(line.Substring(10));
+                    Code.Write(Opcodes.pushInt);
+                    Code.Write(value);
                 }
-                else if (a.StartsWith("pushString "))
+                else if (line.StartsWith("pushString "))
                 {
-                    string temp = a.Substring(11);
+                    string temp = line.Substring(11);
                     string value = temp.Substring(temp.IndexOf("\"") + 1, temp.LastIndexOf("\"") - 1);
-                    code.Write(Opcodes.pushString);
-                    code.Write(value);
+                    Code.Write(Opcodes.pushString);
+                    Code.Write(value);
                 }
-                else if (a.StartsWith("pushVar "))
+                else if (line.StartsWith("pushVar "))
                 {
-                    string name = a.Substring(8);
-                    code.Write(Opcodes.pushVar);
-                    code.Write(name);
+                    string name = line.Substring(8);
+                    Code.Write(Opcodes.pushVar);
+                    Code.Write(name);
                 }
-                else if (a == "print")
+                else if (line.Equals("pop"))
                 {
-                    code.Write(Opcodes.print);
+                    Code.Write(Opcodes.pop);
                 }
-                else if (a == "printLine")
+                else if (line.Equals("popa"))
                 {
-                    code.Write(Opcodes.printLine);
+                    Code.Write(Opcodes.popa);
                 }
-                else if (a == "read")
+                else if (line.StartsWith("decVar "))
                 {
-                    code.Write(Opcodes.read);
+                    string name = line.Substring(7);
+                    Code.Write(Opcodes.decVar);
+                    Code.Write(name);
                 }
-                else if (a == "readLine")
+                else if (line.StartsWith("setVar "))
                 {
-                    code.Write(Opcodes.readLine);
+                    string name = line.Substring(7);
+                    Code.Write(Opcodes.setVar);
+                    Code.Write(name);
                 }
-                else if (a == "delay")
+                else if (line.Equals("add"))
                 {
-                    code.Write(Opcodes.delay);
+                    Code.Write(Opcodes.add);
                 }
-                else if (a == "captureScreen")
+                else if (line.Equals("sub"))
                 {
-                    code.Write(Opcodes.captureScreen);
+                    Code.Write(Opcodes.sub);
                 }
-                else if (a == "getClipboard")
+                else if (line.Equals("mul"))
                 {
-                    code.Write(Opcodes.getClipboard);
+                    Code.Write(Opcodes.mul);
                 }
-                else if (a == "setClipboard")
+                else if (line.Equals("div"))
                 {
-                    code.Write(Opcodes.setClipboard);
+                    Code.Write(Opcodes.div);
                 }
-                else if (a == "write")
+                else if (line.Equals("clear"))
                 {
-                    code.Write(Opcodes.write);
+                    Code.Write(Opcodes.clear);
                 }
-                else if (a == "inputInt32")
-                {
-                    code.Write(Opcodes.inputInt32);
-                }
-                else if (a == "inputString")
-                {
-                    code.Write(Opcodes.inputString);
-                }
-                else if (a == "pop")
-                {
-                    code.Write(Opcodes.pop);
-                }
-                else if (a == "popa")
-                {
-                    code.Write(Opcodes.popa);
-                }
-                else if (a.StartsWith("decVar "))
-                {
-                    string name = a.Substring(7);
-                    code.Write(Opcodes.decVar);
-                    code.Write(name);
-                }
-                else if (a.StartsWith("setVar "))
-                {
-                    string name = a.Substring(7);
-                    code.Write(Opcodes.setVar);
-                    code.Write(name);
-                }
-                else if (a == "add")
-                {
-                    code.Write(Opcodes.add);
-                }
-                else if (a == "sub")
-                {
-                    code.Write(Opcodes.sub);
-                }
-                else if (a == "mul")
-                {
-                    code.Write(Opcodes.mul);
-                }
-                else if (a == "div")
-                {
-                    code.Write(Opcodes.div);
-                }
-                else if (a == "clear")
-                {
-                    code.Write(Opcodes.clear);
-                }
-                else if (a == "ife")
+                else if (line.Equals("ife"))
                 {
                     if (currentBlock != null)
                     {
@@ -171,11 +125,11 @@ namespace Blapaz.Buddy.Runtime
                     }
 
                     currentBlock = new IfBlock(blockNumber);
-                    code.Write(Opcodes.ife);
-                    code.Write(blockNumber);
+                    Code.Write(Opcodes.ife);
+                    Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (a == "ifn")
+                else if (line.Equals("ifn"))
                 {
                     if (currentBlock != null)
                     {
@@ -183,11 +137,11 @@ namespace Blapaz.Buddy.Runtime
                     }
 
                     currentBlock = new IfBlock(blockNumber);
-                    code.Write(Opcodes.ifn);
-                    code.Write(blockNumber);
+                    Code.Write(Opcodes.ifn);
+                    Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (a == "elseife")
+                else if (line.Equals("elseife"))
                 {
                     if (currentBlock != null)
                     {
@@ -195,11 +149,11 @@ namespace Blapaz.Buddy.Runtime
                     }
 
                     currentBlock = new ElseIfBlock(blockNumber);
-                    code.Write(Opcodes.elseife);
-                    code.Write(blockNumber);
+                    Code.Write(Opcodes.elseife);
+                    Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (a == "elseifn")
+                else if (line.Equals("elseifn"))
                 {
                     if (currentBlock != null)
                     {
@@ -207,11 +161,11 @@ namespace Blapaz.Buddy.Runtime
                     }
 
                     currentBlock = new ElseIfBlock(blockNumber);
-                    code.Write(Opcodes.elseifn);
-                    code.Write(blockNumber);
+                    Code.Write(Opcodes.elseifn);
+                    Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (a == "else")
+                else if (line.Equals("else"))
                 {
                     if (currentBlock != null)
                     {
@@ -219,15 +173,15 @@ namespace Blapaz.Buddy.Runtime
                     }
 
                     currentBlock = new ElseBlock(blockNumber);
-                    code.Write(Opcodes.els);
-                    code.Write(blockNumber);
+                    Code.Write(Opcodes.els);
+                    Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (a == "endif")
+                else if (line.Equals("endif"))
                 {
-                    code.Write(Opcodes.endif);
-                    currentBlock.endBlock = code.buffer.Count();
-                    blocks.Add(currentBlock);
+                    Code.Write(Opcodes.endif);
+                    currentBlock.endBlock = Code.buffer.Count();
+                    Blocks.Add(currentBlock);
 
                     if (blockstack.Count > 0)
                     {
@@ -238,26 +192,70 @@ namespace Blapaz.Buddy.Runtime
                         currentBlock = null;
                     }
                 }
-                else if (a.StartsWith("call "))
+                else if (line.StartsWith("call "))
                 {
-                    string name = a.Substring(5);
-                    code.Write(Opcodes.call);
-                    code.Write(name);
+                    string name = line.Substring(5);
+                    Code.Write(Opcodes.call);
+                    Code.Write(name);
                 }
-                else if (a.StartsWith("goto "))
+                else if (line.StartsWith("goto "))
                 {
-                    string name = a.Substring(5);
-                    code.Write(Opcodes.got);
-                    code.Write(name);
+                    string name = line.Substring(5);
+                    Code.Write(Opcodes.got);
+                    Code.Write(name);
                 }
-                else if (a == "ret")
+                else if (line.Equals("print"))
                 {
-                    code.Write(Opcodes.ret);
+                    Code.Write(Opcodes.print);
+                }
+                else if (line.Equals("printLine"))
+                {
+                    Code.Write(Opcodes.printLine);
+                }
+                else if (line.Equals("read"))
+                {
+                    Code.Write(Opcodes.read);
+                }
+                else if (line.Equals("readLine"))
+                {
+                    Code.Write(Opcodes.readLine);
+                }
+                else if (line.Equals("delay"))
+                {
+                    Code.Write(Opcodes.delay);
+                }
+                else if (line.Equals("captureScreen"))
+                {
+                    Code.Write(Opcodes.captureScreen);
+                }
+                else if (line.Equals("getClipboard"))
+                {
+                    Code.Write(Opcodes.getClipboard);
+                }
+                else if (line.Equals("setClipboard"))
+                {
+                    Code.Write(Opcodes.setClipboard);
+                }
+                else if (line.Equals("write"))
+                {
+                    Code.Write(Opcodes.write);
+                }
+                else if (line.Equals("inputInt32"))
+                {
+                    Code.Write(Opcodes.inputInt32);
+                }
+                else if (line.Equals("inputString"))
+                {
+                    Code.Write(Opcodes.inputString);
+                }
+                else if (line.Equals("ret"))
+                {
+                    Code.Write(Opcodes.ret);
                 }
             }
 
-            code.Write(Opcodes.ret);
-            funcs.Add(currentFunc);
+            Code.Write(Opcodes.ret);
+            Funcs.Add(currentFunc);
         }
     }
 }

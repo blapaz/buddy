@@ -46,7 +46,7 @@ namespace App
 
                         if (_config.ShouldOutputCompiled)
                         {
-                            using (FileStream fs = new FileStream(Path.GetFileNameWithoutExtension(scriptFile) + ".buddy", FileMode.Create))
+                            using (FileStream fs = new FileStream(Path.Combine(Path.GetDirectoryName(scriptFile), Path.GetFileNameWithoutExtension(scriptFile) + ".buddy"), FileMode.Create))
                             using (BinaryWriter bw = new BinaryWriter(fs))
                             {
                                 bw.Write(compiledCode);

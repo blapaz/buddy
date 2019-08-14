@@ -16,20 +16,19 @@ namespace Blapaz.Buddy.Runtime
         private static List<Var> _vars = new List<Var>();
         private static Stack<object> _stack = new Stack<object>();
         private static Buffer _code = new Buffer();
-        private static bool _running = true;
+        private static bool _isRunning = true;
         private static Func _currentFunc = null;
         private static Stack<Call> _callstack = new Stack<Call>();
         private static bool _ifWorked = false;
-
         private static InputSimulator _inputSimulator = new InputSimulator();
 
         public Runtime(string input)
         {
             Lexer lexer = new Lexer(input);
-            Events = lexer.events;
-            _funcs = lexer.funcs;
-            _blocks = lexer.blocks;
-            _code = lexer.code;
+            Events = lexer.Events;
+            _funcs = lexer.Funcs;
+            _blocks = lexer.Blocks;
+            _code = lexer.Code;
             
             Run("Main");
         }
@@ -40,14 +39,15 @@ namespace Blapaz.Buddy.Runtime
 
             if (func != null)
             {
-                _running = true;
-                int opcode = 0;
+                _isRunning = true;
                 _code.pos = func.location;
                 _currentFunc = func;
+
+                int opcode = 0;
                 Block currentBlock = null;
                 Stack<Block> block_stack = new Stack<Block>();
 
-                while (_running)
+                while (_isRunning)
                 {
                     try
                     {
@@ -68,57 +68,6 @@ namespace Blapaz.Buddy.Runtime
                     else if (opcode == Opcodes.pushVar)
                     {
                         _stack.Push(GetVarValue(_code.ReadString()));
-                    }
-                    else if (opcode == Opcodes.print)
-                    {
-                        Console.WriteLine(_stack.Pop());
-                    }
-                    else if (opcode == Opcodes.printLine)
-                    {
-                        Console.WriteLine(_stack.Pop());
-                    }
-                    else if (opcode == Opcodes.read)
-                    {
-                        Console.Read();
-                    }
-                    else if (opcode == Opcodes.readLine)
-                    {
-                        Console.ReadLine();
-                    }
-                    else if (opcode == Opcodes.delay)
-                    {
-                        System.Threading.Thread.Sleep(Convert.ToInt32(_stack.Pop()));
-                    }
-                    else if (opcode == Opcodes.captureScreen)
-                    {
-                        string value = _stack.Pop().ToString();
-
-                        if (value.Equals(""))
-                        {
-                            value = Guid.NewGuid().ToString();
-                        }
-
-                        Screenshot.CaptureAndOpen($"{value}.jpg", ImageFormat.Jpeg);
-                    }
-                    else if (opcode == Opcodes.getClipboard)
-                    {
-                        _stack.Push(Clipboard.GetText());
-                    }
-                    else if (opcode == Opcodes.setClipboard)
-                    {
-                        Clipboard.SetText(_stack.Pop().ToString());
-                    }
-                    else if (opcode == Opcodes.inputInt32)
-                    {
-                        _stack.Push(Convert.ToInt32(Console.ReadLine()));
-                    }
-                    else if (opcode == Opcodes.write)
-                    {
-                        _inputSimulator.Keyboard.TextEntry(_stack.Pop().ToString());
-                    }
-                    else if (opcode == Opcodes.inputString)
-                    {
-                        _stack.Push(Console.ReadLine());
                     }
                     else if (opcode == Opcodes.pop)
                     {
@@ -368,8 +317,59 @@ namespace Blapaz.Buddy.Runtime
                         }
                         else
                         {
-                            _running = false;
+                            _isRunning = false;
                         }
+                    }
+                    else if (opcode == Opcodes.print)
+                    {
+                        Console.WriteLine(_stack.Pop());
+                    }
+                    else if (opcode == Opcodes.printLine)
+                    {
+                        Console.WriteLine(_stack.Pop());
+                    }
+                    else if (opcode == Opcodes.read)
+                    {
+                        Console.Read();
+                    }
+                    else if (opcode == Opcodes.readLine)
+                    {
+                        Console.ReadLine();
+                    }
+                    else if (opcode == Opcodes.inputInt32)
+                    {
+                        _stack.Push(Convert.ToInt32(Console.ReadLine()));
+                    }
+                    else if (opcode == Opcodes.inputString)
+                    {
+                        _stack.Push(Console.ReadLine());
+                    }
+                    else if (opcode == Opcodes.delay)
+                    {
+                        System.Threading.Thread.Sleep(Convert.ToInt32(_stack.Pop()));
+                    }
+                    else if (opcode == Opcodes.captureScreen)
+                    {
+                        string value = _stack.Pop().ToString();
+
+                        if (value.Equals(""))
+                        {
+                            value = Guid.NewGuid().ToString();
+                        }
+
+                        Screenshot.CaptureAndOpen($"{value}.jpg", ImageFormat.Jpeg);
+                    }
+                    else if (opcode == Opcodes.getClipboard)
+                    {
+                        _stack.Push(Clipboard.GetText());
+                    }
+                    else if (opcode == Opcodes.setClipboard)
+                    {
+                        Clipboard.SetText(_stack.Pop().ToString());
+                    }
+                    else if (opcode == Opcodes.write)
+                    {
+                        _inputSimulator.Keyboard.TextEntry(_stack.Pop().ToString());
                     }
                 }
             }
