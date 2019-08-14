@@ -58,66 +58,66 @@ namespace Blapaz.Buddy.Runtime
                     Label l = new Label(name, Code.buffer.Count());
                     currentFunc.labels.Add(l);
                 }
-                else if (line.StartsWith("pushInt "))
+                else if (line.StartsWith($"{nameof(Opcodes.pushInt)} "))
                 {
                     int value = Convert.ToInt32(line.Substring(10));
                     Code.Write(Opcodes.pushInt);
                     Code.Write(value);
                 }
-                else if (line.StartsWith("pushString "))
+                else if (line.StartsWith($"{nameof(Opcodes.pushString)} "))
                 {
                     string temp = line.Substring(11);
                     string value = temp.Substring(temp.IndexOf("\"") + 1, temp.LastIndexOf("\"") - 1);
                     Code.Write(Opcodes.pushString);
                     Code.Write(value);
                 }
-                else if (line.StartsWith("pushVar "))
+                else if (line.StartsWith($"{nameof(Opcodes.pushVar)} "))
                 {
                     string name = line.Substring(8);
                     Code.Write(Opcodes.pushVar);
                     Code.Write(name);
                 }
-                else if (line.Equals("pop"))
+                else if (line.Equals(nameof(Opcodes.pop)))
                 {
                     Code.Write(Opcodes.pop);
                 }
-                else if (line.Equals("popa"))
+                else if (line.Equals(nameof(Opcodes.popa)))
                 {
                     Code.Write(Opcodes.popa);
                 }
-                else if (line.StartsWith("decVar "))
+                else if (line.StartsWith($"{nameof(Opcodes.decVar)} "))
                 {
                     string name = line.Substring(7);
                     Code.Write(Opcodes.decVar);
                     Code.Write(name);
                 }
-                else if (line.StartsWith("setVar "))
+                else if (line.StartsWith($"{nameof(Opcodes.setVar)} "))
                 {
                     string name = line.Substring(7);
                     Code.Write(Opcodes.setVar);
                     Code.Write(name);
                 }
-                else if (line.Equals("add"))
+                else if (line.Equals(nameof(Opcodes.add)))
                 {
                     Code.Write(Opcodes.add);
                 }
-                else if (line.Equals("sub"))
+                else if (line.Equals(nameof(Opcodes.sub)))
                 {
                     Code.Write(Opcodes.sub);
                 }
-                else if (line.Equals("mul"))
+                else if (line.Equals(nameof(Opcodes.mul)))
                 {
                     Code.Write(Opcodes.mul);
                 }
-                else if (line.Equals("div"))
+                else if (line.Equals(nameof(Opcodes.div)))
                 {
                     Code.Write(Opcodes.div);
                 }
-                else if (line.Equals("clear"))
+                else if (line.Equals(nameof(Opcodes.clear)))
                 {
                     Code.Write(Opcodes.clear);
                 }
-                else if (line.Equals("ife"))
+                else if (line.Equals(nameof(Opcodes.ife)))
                 {
                     if (currentBlock != null)
                     {
@@ -129,7 +129,7 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals("ifn"))
+                else if (line.Equals(nameof(Opcodes.ifn)))
                 {
                     if (currentBlock != null)
                     {
@@ -141,7 +141,7 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals("elseife"))
+                else if (line.Equals(nameof(Opcodes.elseife)))
                 {
                     if (currentBlock != null)
                     {
@@ -153,7 +153,7 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals("elseifn"))
+                else if (line.Equals(nameof(Opcodes.elseifn)))
                 {
                     if (currentBlock != null)
                     {
@@ -165,7 +165,7 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals("else"))
+                else if (line.Equals(nameof(Opcodes.els)))
                 {
                     if (currentBlock != null)
                     {
@@ -177,7 +177,7 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals("endif"))
+                else if (line.Equals(nameof(Opcodes.endif)))
                 {
                     Code.Write(Opcodes.endif);
                     currentBlock.endBlock = Code.buffer.Count();
@@ -192,63 +192,63 @@ namespace Blapaz.Buddy.Runtime
                         currentBlock = null;
                     }
                 }
-                else if (line.StartsWith("call "))
+                else if (line.StartsWith($"{nameof(Opcodes.call)} "))
                 {
                     string name = line.Substring(5);
                     Code.Write(Opcodes.call);
                     Code.Write(name);
                 }
-                else if (line.StartsWith("goto "))
+                else if (line.StartsWith($"{nameof(Opcodes.got)} "))
                 {
                     string name = line.Substring(5);
                     Code.Write(Opcodes.got);
                     Code.Write(name);
                 }
-                else if (line.Equals("print"))
+                else if (line.Equals(nameof(Opcodes.print)))
                 {
                     Code.Write(Opcodes.print);
                 }
-                else if (line.Equals("printLine"))
+                else if (line.Equals(nameof(Opcodes.printLine)))
                 {
                     Code.Write(Opcodes.printLine);
                 }
-                else if (line.Equals("read"))
+                else if (line.Equals(nameof(Opcodes.read)))
                 {
                     Code.Write(Opcodes.read);
                 }
-                else if (line.Equals("readLine"))
+                else if (line.Equals(nameof(Opcodes.readLine)))
                 {
                     Code.Write(Opcodes.readLine);
                 }
-                else if (line.Equals("delay"))
+                else if (line.Equals(nameof(Opcodes.delay)))
                 {
                     Code.Write(Opcodes.delay);
                 }
-                else if (line.Equals("captureScreen"))
+                else if (line.Equals(nameof(Opcodes.captureScreen)))
                 {
                     Code.Write(Opcodes.captureScreen);
                 }
-                else if (line.Equals("getClipboard"))
+                else if (line.Equals(nameof(Opcodes.getClipboard)))
                 {
                     Code.Write(Opcodes.getClipboard);
                 }
-                else if (line.Equals("setClipboard"))
+                else if (line.Equals(nameof(Opcodes.setClipboard)))
                 {
                     Code.Write(Opcodes.setClipboard);
                 }
-                else if (line.Equals("write"))
+                else if (line.Equals(nameof(Opcodes.write)))
                 {
                     Code.Write(Opcodes.write);
                 }
-                else if (line.Equals("inputInt32"))
+                else if (line.Equals(nameof(Opcodes.inputInt32)))
                 {
                     Code.Write(Opcodes.inputInt32);
                 }
-                else if (line.Equals("inputString"))
+                else if (line.Equals(nameof(Opcodes.inputString)))
                 {
                     Code.Write(Opcodes.inputString);
                 }
-                else if (line.Equals("ret"))
+                else if (line.Equals(nameof(Opcodes.ret)))
                 {
                     Code.Write(Opcodes.ret);
                 }
