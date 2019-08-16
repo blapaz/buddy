@@ -25,8 +25,8 @@ namespace Blapaz.Buddy.Compiler
             Return,
             StringLiteral,
             IntLiteral,
-            ArrayLiteral,
             Ident,
+            ArrayIdent,
             Whitespace,
             NewLine,
             Add,
@@ -66,7 +66,7 @@ namespace Blapaz.Buddy.Compiler
             _tokens.Add(TokenType.Event, "event");
             _tokens.Add(TokenType.StringLiteral, "\".*?\"");
             _tokens.Add(TokenType.IntLiteral, "[0-9][0-9]*");
-            _tokens.Add(TokenType.ArrayLiteral, "\\[.*?\\]");
+            _tokens.Add(TokenType.ArrayIdent, "[a-zA-Z_]*\\[[0-9]*\\]");
             _tokens.Add(TokenType.Ident, "[a-zA-Z_][a-zA-Z0-9_]*");
             _tokens.Add(TokenType.Whitespace, "[ \\t]+");
             _tokens.Add(TokenType.NewLine, "\\n");
@@ -81,6 +81,8 @@ namespace Blapaz.Buddy.Compiler
             _tokens.Add(TokenType.RightParan, "\\)");
             _tokens.Add(TokenType.LeftBrace, "\\{");
             _tokens.Add(TokenType.RightBrace, "\\}");
+            _tokens.Add(TokenType.LeftBracket, "\\[");
+            _tokens.Add(TokenType.RightBracket, "\\]");
             _tokens.Add(TokenType.Comma, "\\,");
             _tokens.Add(TokenType.Period, "\\.");
             _tokens.Add(TokenType.Comment, "\\#.*?\n");
@@ -103,6 +105,14 @@ namespace Blapaz.Buddy.Compiler
                     if (match.Index == _index)
                     {
                         _index += match.Length;
+
+                        // Convert array ident into a normal ident
+                        if (pair.Key == TokenType.ArrayIdent)
+                        {
+                            return new Token(TokenType.Ident, match.Value.Replace("[", ".").Replace("]", ""));
+                        }
+
+                        // Standard ident
                         return new Token(pair.Key, match.Value);
                     }
 

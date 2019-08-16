@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Schema;
 
 namespace Blapaz.Buddy.Compiler
 {
@@ -36,7 +37,33 @@ namespace Blapaz.Buddy.Compiler
                 }
                 else if (token.Name == Lexer.TokenType.Global)
                 {
-                    Tree.Add(ParseGlobalAssign());
+                    if (_tokens.Peek().Name == Lexer.TokenType.Ident)
+                    {
+                        string ident = _tokens.GetToken().Value.ToString();
+
+                        // Standard assign, could be string, int, or array
+                        if (_tokens.Peek().Name == Lexer.TokenType.Equal)
+                        {
+                            _tokens.pos++;
+
+                            // Assign an array
+                            if (_tokens.Peek().Name == Lexer.TokenType.LeftBracket)
+                            {
+                                // Go back two tokens to get ident
+                                _tokens.pos -= 2;
+
+                                foreach (GlobalAssign assign in ParseGlobalAssignArray())
+                                {
+                                    Tree.Add(assign);
+                                }
+                            }
+                            // Assign an expr
+                            else
+                            {
+                                Tree.Add(new GlobalAssign(ident, ParseExpr()));
+                            }
+                        }
+                    }
                 }
                 else if (token.Name == Lexer.TokenType.Function)
                 {
@@ -106,12 +133,31 @@ namespace Blapaz.Buddy.Compiler
                 }
                 else if (token.Name == Lexer.TokenType.Ident)
                 {
+                    // Standard assign, could be string, int, or array
                     if (_tokens.Peek().Name == Lexer.TokenType.Equal)
                     {
-                        _tokens.pos--;
-                        Assign a = ParseAssign();
-                        _currentBlock.AddStmt(a);
+                        _tokens.pos++;
+
+                        // Assign an array
+                        if (_tokens.Peek().Name == Lexer.TokenType.LeftBracket)
+                        {
+                            // Go back two tokens to get ident
+                            _tokens.pos -= 2;
+
+                            foreach (Assign assign in ParseAssignArray())
+                            {
+                                _currentBlock.AddStmt(assign);
+                            }
+                        }
+                        // Assign an expr
+                        else
+                        {
+                            // Go back two tokens to ident
+                            _tokens.pos -= 2;
+                            _currentBlock.AddStmt(ParseAssign());
+                        }
                     }
+                    // Reference to a function call
                     else if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
                     {
                         _tokens.pos--;
@@ -311,21 +357,11 @@ namespace Blapaz.Buddy.Compiler
 
         private GlobalAssign ParseGlobalAssign()
         {
-            string ident = "";
+            string ident = _tokens.GetToken().Value.ToString();
 
-            if (_tokens.Peek().Name == Lexer.TokenType.Ident)
-            {
-                ident = _tokens.GetToken().Value.ToString();
+            _tokens.pos++;
 
-                if (_tokens.Peek().Name == Lexer.TokenType.Equal)
-                {
-                    _tokens.pos++;
-                    Expr value = ParseExpr();
-                    return new GlobalAssign(ident, value);
-                }
-            }
-
-            return null;
+            return new GlobalAssign(ident, ParseExpr());
         }
 
         private Assign ParseAssign()
@@ -341,6 +377,52 @@ namespace Blapaz.Buddy.Compiler
             Expr value = ParseExpr();
 
             ret = new Assign(ident, value);
+
+            return ret;
+        }
+
+        private List<GlobalAssign> ParseGlobalAssignArray()
+        {
+            List<GlobalAssign> ret = new List<GlobalAssign>();
+            string ident = _tokens.GetToken().Value.ToString();
+
+            // Skips '=' and '['
+            _tokens.pos += 2;
+
+            int index = 0;
+
+            while (_tokens.Peek().Name != Lexer.TokenType.RightBracket)
+            {
+                Expr value = ParseExpr();
+                ret.Add(new GlobalAssign($"{ident}.{index}", value));
+                index++;
+
+                if (_tokens.Peek().Name == Lexer.TokenType.Comma)
+                    _tokens.pos++;
+            }
+
+            return ret;
+        }
+
+        private List<Assign> ParseAssignArray()
+        {
+            List<Assign> ret = new List<Assign>();
+            string ident = _tokens.GetToken().Value.ToString();
+
+            // Skips '=' and '['
+            _tokens.pos += 2;
+
+            int index = 0;
+
+            while (_tokens.Peek().Name != Lexer.TokenType.RightBracket)
+            {
+                Expr value = ParseExpr();
+                ret.Add(new Assign($"{ident}.{index}", value));
+                index++;
+
+                if (_tokens.Peek().Name == Lexer.TokenType.Comma)
+                    _tokens.pos++;
+            }
 
             return ret;
         }
