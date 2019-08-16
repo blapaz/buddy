@@ -44,6 +44,7 @@ namespace Blapaz.Buddy.Compiler
             RightBracket,
             Comma,
             Period,
+            Comment,
             EOF
         }
 
@@ -82,6 +83,7 @@ namespace Blapaz.Buddy.Compiler
             _tokens.Add(TokenType.RightBrace, "\\}");
             _tokens.Add(TokenType.Comma, "\\,");
             _tokens.Add(TokenType.Period, "\\.");
+            _tokens.Add(TokenType.Comment, "\\#.*?\n");
 
             foreach (KeyValuePair<TokenType, string> pair in _tokens)
             {

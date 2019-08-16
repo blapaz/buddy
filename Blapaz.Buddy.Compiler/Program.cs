@@ -17,7 +17,8 @@ namespace Blapaz.Buddy.Compiler
             Token token;
             while ((token = lexer.GetToken()).Name != Lexer.TokenType.EOF)
             {
-                if (token.Name != Lexer.TokenType.Whitespace && token.Name != Lexer.TokenType.NewLine && token.Name != Lexer.TokenType.Undefined)
+                if (token.Name != Lexer.TokenType.Whitespace && token.Name != Lexer.TokenType.NewLine && 
+                    token.Name != Lexer.TokenType.Comment && token.Name != Lexer.TokenType.Undefined)
                 {
                     tokens.Add(token);
                 }
