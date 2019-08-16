@@ -294,7 +294,7 @@ namespace Blapaz.Buddy.Runtime
                     {
                         string name = _code.ReadString();
                         Func f = GetFunc(name);
-                        Call c = new Call(_currentFunc, _code.pos, _vars);
+                        Call c = new Call(_currentFunc, _code.pos, new List<Var>(_vars));
                         _callstack.Push(c);
                         _currentFunc = f;
                         _code.pos = f.location;
