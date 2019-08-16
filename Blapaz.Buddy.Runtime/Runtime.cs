@@ -13,6 +13,7 @@ namespace Blapaz.Buddy.Runtime
 
         private static List<Func> _funcs = new List<Func>();
         private static List<Block> _blocks = new List<Block>();
+        private static List<Var> _globalVars = new List<Var>();
         private static List<Var> _vars = new List<Var>();
         private static Stack<object> _stack = new Stack<object>();
         private static Buffer _code = new Buffer();
@@ -27,6 +28,7 @@ namespace Blapaz.Buddy.Runtime
             Lexer lexer = new Lexer(input);
             Events = lexer.Events;
             _funcs = lexer.Funcs;
+            _globalVars = lexer.GlobalVars;
             _blocks = lexer.Blocks;
             _code = lexer.Code;
             
@@ -414,17 +416,24 @@ namespace Blapaz.Buddy.Runtime
 
         static object GetVarValue(string name)
         {
-            object value = 0;
-
             foreach (Var v in _vars)
             {
                 if (v.name == name)
                 {
-                    value = v.value;
+                    return v.value;
                 }
             }
 
-            return value;
+            // Look for global var since no local var was found
+            foreach (Var gvar in _globalVars)
+            {
+                if (gvar.name == name)
+                {
+                    return gvar.value;
+                }
+            }
+
+            return "null";
         }
 
         static void SetVarValue(string name, object value)

@@ -11,5 +11,11 @@
             name = n;
             value = null;
         }
+
+        public Var(string n, string v)
+        {
+            name = n;
+            value = v;
+        }
     }
 }

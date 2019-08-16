@@ -45,6 +45,10 @@ namespace Blapaz.Buddy.Compiler
                 {
                     CompileRepeat((RepeatBlock)statement);
                 }
+                else if (statement is GlobalAssign)
+                {
+                    CompileGlobalAssign((GlobalAssign)statement);
+                }
                 else if (statement is Assign)
                 {
                     CompileAssign((Assign)statement);
@@ -139,6 +143,12 @@ namespace Blapaz.Buddy.Compiler
             Write(name);
             CompileStmtList(data.statements);
             Write("goto " + name);
+        }
+
+        private void CompileGlobalAssign(GlobalAssign globalAssign)
+        {
+            CompileExpr(globalAssign.Value);
+            Write("setGlobalVar " + globalAssign.Ident);
         }
 
         private void CompileAssign(Assign data)

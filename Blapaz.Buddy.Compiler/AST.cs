@@ -79,6 +79,18 @@ namespace Blapaz.Buddy.Compiler
 
     class RepeatBlock : Block { }
 
+    class GlobalAssign : Stmt
+    {
+        public string Ident { get; private set;  }
+        public Expr Value { get; private set; }
+
+        public GlobalAssign(string ident, Expr value)
+        {
+            Ident = ident;
+            Value = value;
+        }
+    }
+
     class Assign : Stmt
     {
         public string ident;

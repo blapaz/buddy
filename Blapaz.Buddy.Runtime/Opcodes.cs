@@ -24,6 +24,8 @@
         public static readonly int got = 19;
         public static readonly int ret = 20;
 
+        public static readonly int setGlobalVar = 21;
+
         // System functions
         public static readonly int print = 200;
         public static readonly int printLine = 201;

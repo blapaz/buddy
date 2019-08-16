@@ -10,6 +10,9 @@ namespace Blapaz.Buddy.Runtime
         public List<Func> Funcs { get; private set; } = new List<Func>();
         public List<Block> Blocks { get; private set; } = new List<Block>();
         public Buffer Code { get; private set; } = new Buffer();
+        public List<Var> GlobalVars { get; private set; } = new List<Var>();
+
+        private string _pushVarValue = "";
 
         public Lexer(string compiledCode)
         {
@@ -60,9 +63,11 @@ namespace Blapaz.Buddy.Runtime
                 }
                 else if (line.StartsWith($"{nameof(Opcodes.pushInt)} "))
                 {
-                    int value = Convert.ToInt32(line.Substring(10));
+                    int value = Convert.ToInt32(line.Substring(8));
                     Code.Write(Opcodes.pushInt);
                     Code.Write(value);
+
+                    _pushVarValue = value.ToString();
                 }
                 else if (line.StartsWith($"{nameof(Opcodes.pushString)} "))
                 {
@@ -70,6 +75,8 @@ namespace Blapaz.Buddy.Runtime
                     string value = temp.Substring(temp.IndexOf("\"") + 1, temp.LastIndexOf("\"") - 1);
                     Code.Write(Opcodes.pushString);
                     Code.Write(value);
+
+                    _pushVarValue = value;
                 }
                 else if (line.StartsWith($"{nameof(Opcodes.pushVar)} "))
                 {
@@ -90,6 +97,17 @@ namespace Blapaz.Buddy.Runtime
                     string name = line.Substring(7);
                     Code.Write(Opcodes.decVar);
                     Code.Write(name);
+                }
+                else if (line.StartsWith($"{nameof(Opcodes.setGlobalVar)} "))
+                {
+                    string name = line.Substring(13);
+                    Code.Write(Opcodes.setGlobalVar);
+                    Code.Write(name);
+
+                    if (_pushVarValue != null)
+                    {
+                        GlobalVars.Add(new Var(name, _pushVarValue));
+                    }
                 }
                 else if (line.StartsWith($"{nameof(Opcodes.setVar)} "))
                 {
@@ -256,6 +274,20 @@ namespace Blapaz.Buddy.Runtime
 
             Code.Write(Opcodes.ret);
             Funcs.Add(currentFunc);
+        }
+
+        private void SetGlobalVarValue(string name, object value)
+        {
+            foreach (Var gvar in GlobalVars)
+            {
+                if (gvar.name == name)
+                {
+                    gvar.value = value;
+                    return;
+                }
+            }
+
+            GlobalVars.Add(new Var(name) { value = value });
         }
     }
 }

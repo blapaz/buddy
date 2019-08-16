@@ -26,9 +26,8 @@ namespace Blapaz.Buddy.Compiler
             tokens.Add(new Token(Lexer.TokenType.EOF, "EOF"));
 
             Parser parser = new Parser(new TokenList(tokens));
-            List<Stmt> tree = parser.GetTree();
+            Compiler compiler = new Compiler(parser.Tree);
 
-            Compiler compiler = new Compiler(tree);
             string compiledCode = compiler.Code;
 
             foreach (string import in Imports)

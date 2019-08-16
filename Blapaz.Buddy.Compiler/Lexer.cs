@@ -14,6 +14,7 @@ namespace Blapaz.Buddy.Compiler
         {
             Undefined,
             Import,
+            Global,
             Function,
             If,
             ElseIf,
@@ -54,6 +55,7 @@ namespace Blapaz.Buddy.Compiler
             _index = 0;
 
             _tokens.Add(TokenType.Import, "import");
+            _tokens.Add(TokenType.Global, "global");
             _tokens.Add(TokenType.Function, "function");
             _tokens.Add(TokenType.If, "if");
             _tokens.Add(TokenType.ElseIf, "elseif");

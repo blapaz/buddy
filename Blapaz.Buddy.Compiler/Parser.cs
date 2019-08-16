@@ -5,18 +5,20 @@ namespace Blapaz.Buddy.Compiler
 {
     class Parser
     {
+        public List<Stmt> Tree { get; private set; }
+
         private TokenList _tokens;
         private Block _currentBlock;
         private Stack<Block> _blockstack;
-        private List<Stmt> _tree;
         private bool _isRunning;
 
         public Parser(TokenList tokenList)
         {
+            Tree = new List<Stmt>();
+
             _tokens = tokenList;
             _currentBlock = null;
-            _blockstack = new Stack<Block>();
-            _tree = new List<Stmt>();
+            _blockstack = new Stack<Block>();        
             _isRunning = true;
             Token token = null;
 
@@ -32,6 +34,10 @@ namespace Blapaz.Buddy.Compiler
                 {
                     Program.Imports.Add(ParseImport());
                 }
+                else if (token.Name == Lexer.TokenType.Global)
+                {
+                    Tree.Add(ParseGlobalAssign());
+                }
                 else if (token.Name == Lexer.TokenType.Function)
                 {
                     Func func = ParseFunc();
@@ -43,7 +49,7 @@ namespace Blapaz.Buddy.Compiler
                     else
                     {
                         _currentBlock.AddStmt(new Return(null));
-                        _tree.Add(_currentBlock);
+                        Tree.Add(_currentBlock);
                         _currentBlock = func;
                     }
                 }
@@ -58,7 +64,7 @@ namespace Blapaz.Buddy.Compiler
                     else
                     {
                         _currentBlock.AddStmt(new Return(null));
-                        _tree.Add(_currentBlock);
+                        Tree.Add(_currentBlock);
                         _currentBlock = evnt;
                     }
                 }
@@ -123,7 +129,7 @@ namespace Blapaz.Buddy.Compiler
                     if (_currentBlock is Func)
                     {
                         _currentBlock.AddStmt(new Return(null));
-                        _tree.Add(_currentBlock);
+                        Tree.Add(_currentBlock);
                         _currentBlock = null;
                     }
                     else if (_currentBlock is IfBlock || _currentBlock is ElseIfBlock || _currentBlock is ElseBlock)
@@ -150,7 +156,7 @@ namespace Blapaz.Buddy.Compiler
                 }
                 else if (token.Name == Lexer.TokenType.EOF)
                 {
-                    _tree.Add(_currentBlock);
+                    Tree.Add(_currentBlock);
                     _isRunning = false;
                 }
             }
@@ -301,6 +307,25 @@ namespace Blapaz.Buddy.Compiler
             ret = new ElseIfBlock(lexpr, op, rexpr);
 
             return ret;
+        }
+
+        private GlobalAssign ParseGlobalAssign()
+        {
+            string ident = "";
+
+            if (_tokens.Peek().Name == Lexer.TokenType.Ident)
+            {
+                ident = _tokens.GetToken().Value.ToString();
+
+                if (_tokens.Peek().Name == Lexer.TokenType.Equal)
+                {
+                    _tokens.pos++;
+                    Expr value = ParseExpr();
+                    return new GlobalAssign(ident, value);
+                }
+            }
+
+            return null;
         }
 
         private Assign ParseAssign()
@@ -515,11 +540,6 @@ namespace Blapaz.Buddy.Compiler
             }
 
             return ret;
-        }
-
-        public List<Stmt> GetTree()
-        {
-            return _tree;
         }
     }
 }
