@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{63EAFAD7-D9E6-412A-B954-751CD90EC02F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4ED2DDE2-63BA-45DE-BF17-1D88B0D5A83A} = {4ED2DDE2-63BA-45DE-BF17-1D88B0D5A83A}
+		{9B2367E8-FE7B-4E22-BB74-F5E05AB12339} = {9B2367E8-FE7B-4E22-BB74-F5E05AB12339}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blapaz.Buddy.Compiler", "Blapaz.Buddy.Compiler\Blapaz.Buddy.Compiler.csproj", "{4ED2DDE2-63BA-45DE-BF17-1D88B0D5A83A}"
 EndProject
