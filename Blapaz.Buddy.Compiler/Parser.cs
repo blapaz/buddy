@@ -170,7 +170,7 @@ namespace Blapaz.Buddy.Compiler
                     Return r = ParseReturn();
                     _currentBlock.AddStmt(r);
                 }
-                else if (token.Name == Lexer.TokenType.RightParan)
+                else if (token.Name == Lexer.TokenType.RightBrace)
                 {
                     if (_currentBlock is Func)
                     {

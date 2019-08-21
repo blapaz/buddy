@@ -216,9 +216,9 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(Opcodes.call);
                     Code.Write(name);
                 }
-                else if (line.StartsWith($"{nameof(Opcodes.got)} "))
+                else if (line.StartsWith("goto "))
                 {
-                    string name = line.Substring(5);
+                    string name = line.Substring(6);
                     Code.Write(Opcodes.got);
                     Code.Write(name);
                 }
