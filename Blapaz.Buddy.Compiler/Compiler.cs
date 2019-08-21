@@ -101,14 +101,7 @@ namespace Blapaz.Buddy.Compiler
             CompileExpr(data.leftExpr);
             CompileExpr(data.rightExpr);
 
-            if (data.op == Symbol.doubleEqual)
-            {
-                Write("ife");
-            }
-            else if (data.op == Symbol.notEqual)
-            {
-                Write("ifn");
-            }
+            Write($"if{CompileSymbol(data.op)}");
 
             CompileStmtList(data.statements);
         }
@@ -118,16 +111,23 @@ namespace Blapaz.Buddy.Compiler
             CompileExpr(data.leftExpr);
             CompileExpr(data.rightExpr);
 
-            if (data.op == Symbol.doubleEqual)
-            {
-                Write("elseife");
-            }
-            else if (data.op == Symbol.notEqual)
-            {
-                Write("elseifn");
-            }
+            Write($"elseif{CompileSymbol(data.op)}");
 
             CompileStmtList(data.statements);
+        }
+
+        private string CompileSymbol(Symbol op)
+        {
+            if (op == Symbol.doubleEqual)
+            {
+                return "e";
+            }
+            else if (op == Symbol.notEqual)
+            {
+                return "n";
+            }
+
+            return op.ToString();
         }
 
         private void CompileElse(ElseBlock data)

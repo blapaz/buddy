@@ -36,6 +36,10 @@ namespace Blapaz.Buddy.Compiler
             Equal,
             DoubleEqual,
             NotEqual,
+            Lesser,
+            LesserEqual,
+            Greater,
+            GreaterEqual,
             LeftParan,
             RightParan,
             LeftBrace,
@@ -75,7 +79,11 @@ namespace Blapaz.Buddy.Compiler
             _tokens.Add(TokenType.Mul, "\\*");
             _tokens.Add(TokenType.Div, "\\/");
             _tokens.Add(TokenType.DoubleEqual, "\\==");
-            _tokens.Add(TokenType.NotEqual, "\\!=");
+            _tokens.Add(TokenType.NotEqual, "\\!=");    
+            _tokens.Add(TokenType.LesserEqual, "\\<\\=");
+            _tokens.Add(TokenType.Lesser, "\\<");       
+            _tokens.Add(TokenType.GreaterEqual, "\\>\\=");
+            _tokens.Add(TokenType.Greater, "\\>");
             _tokens.Add(TokenType.Equal, "\\=");
             _tokens.Add(TokenType.LeftParan, "\\(");
             _tokens.Add(TokenType.RightParan, "\\)");

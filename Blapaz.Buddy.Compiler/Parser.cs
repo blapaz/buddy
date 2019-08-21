@@ -302,9 +302,24 @@ namespace Blapaz.Buddy.Compiler
                 op = Symbol.doubleEqual;
                 _tokens.pos++;
             }
-            else if (_tokens.Peek().Name == Lexer.TokenType.NotEqual)
+            else if (_tokens.Peek().Name == Lexer.TokenType.Greater)
             {
-                op = Symbol.notEqual;
+                op = Symbol.gt;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.GreaterEqual)
+            {
+                op = Symbol.gte;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.Lesser)
+            {
+                op = Symbol.lt;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.LesserEqual)
+            {
+                op = Symbol.lte;
                 _tokens.pos++;
             }
 
@@ -340,6 +355,26 @@ namespace Blapaz.Buddy.Compiler
             else if (_tokens.Peek().Name == Lexer.TokenType.NotEqual)
             {
                 op = Symbol.notEqual;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.Greater)
+            {
+                op = Symbol.gt;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.GreaterEqual)
+            {
+                op = Symbol.gte;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.Lesser)
+            {
+                op = Symbol.lt;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.LesserEqual)
+            {
+                op = Symbol.lte;
                 _tokens.pos++;
             }
 

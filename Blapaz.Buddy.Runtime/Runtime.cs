@@ -183,6 +183,122 @@ namespace Blapaz.Buddy.Runtime
                             _ifWorked = false;
                         }
                     }
+                    else if (opcode == Opcodes.ifgt)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        IfBlock ifblock = GetIf(blockNumber);
+
+                        object value1 = _stack.Pop();
+                        object value2 = _stack.Pop();
+
+                        if (IfGreater(value1, value2))
+                        {
+                            if (currentBlock == null)
+                            {
+                                currentBlock = ifblock;
+                            }
+                            else
+                            {
+                                block_stack.Push(currentBlock);
+                                currentBlock = ifblock;
+                            }
+
+                            IncVars();
+                            _ifWorked = true;
+                        }
+                        else
+                        {
+                            _code.pos = ifblock.endBlock;
+                            _ifWorked = false;
+                        }
+                    }
+                    else if (opcode == Opcodes.ifgte)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        IfBlock ifblock = GetIf(blockNumber);
+
+                        object value1 = _stack.Pop();
+                        object value2 = _stack.Pop();
+
+                        if (IfGreater(value1, value2) || IfEqual(value1, value2))
+                        {
+                            if (currentBlock == null)
+                            {
+                                currentBlock = ifblock;
+                            }
+                            else
+                            {
+                                block_stack.Push(currentBlock);
+                                currentBlock = ifblock;
+                            }
+
+                            IncVars();
+                            _ifWorked = true;
+                        }
+                        else
+                        {
+                            _code.pos = ifblock.endBlock;
+                            _ifWorked = false;
+                        }
+                    }
+                    else if (opcode == Opcodes.iflt)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        IfBlock ifblock = GetIf(blockNumber);
+
+                        object value1 = _stack.Pop();
+                        object value2 = _stack.Pop();
+
+                        if (IfLesser(value1, value2))
+                        {
+                            if (currentBlock == null)
+                            {
+                                currentBlock = ifblock;
+                            }
+                            else
+                            {
+                                block_stack.Push(currentBlock);
+                                currentBlock = ifblock;
+                            }
+
+                            IncVars();
+                            _ifWorked = true;
+                        }
+                        else
+                        {
+                            _code.pos = ifblock.endBlock;
+                            _ifWorked = false;
+                        }
+                    }
+                    else if (opcode == Opcodes.iflte)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        IfBlock ifblock = GetIf(blockNumber);
+
+                        object value1 = _stack.Pop();
+                        object value2 = _stack.Pop();
+
+                        if (IfLesser(value1, value2) || IfEqual(value1, value2))
+                        {
+                            if (currentBlock == null)
+                            {
+                                currentBlock = ifblock;
+                            }
+                            else
+                            {
+                                block_stack.Push(currentBlock);
+                                currentBlock = ifblock;
+                            }
+
+                            IncVars();
+                            _ifWorked = true;
+                        }
+                        else
+                        {
+                            _code.pos = ifblock.endBlock;
+                            _ifWorked = false;
+                        }
+                    }
                     else if (opcode == Opcodes.elseife)
                     {
                         int blockNumber = _code.ReadInt();
@@ -519,18 +635,44 @@ namespace Blapaz.Buddy.Runtime
 
         static bool IfEqual(object value1, object value2)
         {
-            bool ifequal = false;
-
             if ((value1 is int && value2 is int) && ((int)value1 == (int)value2))
             {
-                ifequal = true;
+                return true;
             }
-            else if ((value1 is string && value2 is string) && ((string)value1 == (string)value2))
+            else if ((value1 is string && value2 is string) && (((string)value1).Length == ((string)value2).Length))
             {
-                ifequal = true;
+                return true;
             }
 
-            return ifequal;
+            return false;
+        }
+
+        static bool IfGreater(object value1, object value2)
+        {
+            if ((value1 is int && value2 is int) && ((int)value1 > (int)value2))
+            {
+                return true;
+            }
+            else if ((value1 is string && value2 is string) && (((string)value1).Length > ((string)value2).Length))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool IfLesser(object value1, object value2)
+        {
+            if ((value1 is int && value2 is int) && ((int)value1 < (int)value2))
+            {
+                return true;
+            }
+            else if ((value1 is string && value2 is string) && (((string)value1).Length < ((string)value2).Length))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         static void IncVars()

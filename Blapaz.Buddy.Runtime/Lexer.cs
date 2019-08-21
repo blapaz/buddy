@@ -135,51 +135,81 @@ namespace Blapaz.Buddy.Runtime
                 {
                     Code.Write(Opcodes.clear);
                 }
-                else if (line.Equals(nameof(Opcodes.ife)))
+                else if (line.StartsWith("if"))
                 {
+                    string op = line.Substring(3);
+
                     if (currentBlock != null)
                     {
                         blockstack.Push(currentBlock);
                     }
 
                     currentBlock = new IfBlock(blockNumber);
-                    Code.Write(Opcodes.ife);
-                    Code.Write(blockNumber);
-                    blockNumber++;
-                }
-                else if (line.Equals(nameof(Opcodes.ifn)))
-                {
-                    if (currentBlock != null)
+
+                    if (op.Equals("e"))
                     {
-                        blockstack.Push(currentBlock);
+                        Code.Write(Opcodes.ife);
+                    }
+                    else if (op.Equals("n"))
+                    {
+                        Code.Write(Opcodes.ifn);
+                    }
+                    else if (op.Equals("gt"))
+                    {
+                        Code.Write(Opcodes.ifgt);
+                    }
+                    else if (op.Equals("gte"))
+                    {
+                        Code.Write(Opcodes.ifgte);
+                    }
+                    else if (op.Equals("lt"))
+                    {
+                        Code.Write(Opcodes.iflt);
+                    }
+                    else if (op.Equals("lte"))
+                    {
+                        Code.Write(Opcodes.iflte);
                     }
 
-                    currentBlock = new IfBlock(blockNumber);
-                    Code.Write(Opcodes.ifn);
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
                 else if (line.Equals(nameof(Opcodes.elseife)))
                 {
+                    string op = line.Substring(8);
+
                     if (currentBlock != null)
                     {
                         blockstack.Push(currentBlock);
                     }
 
                     currentBlock = new ElseIfBlock(blockNumber);
-                    Code.Write(Opcodes.elseife);
-                    Code.Write(blockNumber);
-                    blockNumber++;
-                }
-                else if (line.Equals(nameof(Opcodes.elseifn)))
-                {
-                    if (currentBlock != null)
+
+                    if (op.Equals("e"))
                     {
-                        blockstack.Push(currentBlock);
+                        Code.Write(Opcodes.elseife);
+                    }
+                    else if (op.Equals("n"))
+                    {
+                        Code.Write(Opcodes.elseifn);
+                    }
+                    else if (op.Equals("gt"))
+                    {
+                        Code.Write(Opcodes.elseifgt);
+                    }
+                    else if (op.Equals("gte"))
+                    {
+                        Code.Write(Opcodes.elseifgte);
+                    }
+                    else if (op.Equals("lt"))
+                    {
+                        Code.Write(Opcodes.elseiflt);
+                    }
+                    else if (op.Equals("lte"))
+                    {
+                        Code.Write(Opcodes.elseiflte);
                     }
 
-                    currentBlock = new ElseIfBlock(blockNumber);
-                    Code.Write(Opcodes.elseifn);
                     Code.Write(blockNumber);
                     blockNumber++;
                 }

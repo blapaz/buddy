@@ -25,6 +25,14 @@
         public static readonly int ret = 20;
 
         public static readonly int setGlobalVar = 21;
+        public static readonly int ifgt = 22;
+        public static readonly int ifgte = 23;
+        public static readonly int iflt = 24;
+        public static readonly int iflte = 25;
+        public static readonly int elseifgt = 26;
+        public static readonly int elseifgte = 27;
+        public static readonly int elseiflt = 28;
+        public static readonly int elseiflte = 29;
 
         // System functions
         public static readonly int print = 200;
