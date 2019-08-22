@@ -107,7 +107,7 @@ namespace Blapaz.Buddy.Runtime
                     {
                         int value1 = (int) _stack.Pop();
                         int value2 = (int) _stack.Pop();
-                        _stack.Push(value1 + value2);
+                        _stack.Push(value2 - value1);
                     }
                     else if (opcode == Opcodes.mul)
                     {
