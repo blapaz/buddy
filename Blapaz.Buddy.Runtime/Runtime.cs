@@ -489,6 +489,11 @@ namespace Blapaz.Buddy.Runtime
                     {
                         _inputSimulator.Keyboard.TextEntry(_stack.Pop().ToString());
                     }
+                    else if (opcode == Opcodes.exit)
+                    {
+                        Environment.Exit(0);
+                        Application.Exit();
+                    }
                 }
             }
             else

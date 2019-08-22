@@ -288,6 +288,10 @@ namespace Blapaz.Buddy.Runtime
                 {
                     Code.Write(Opcodes.write);
                 }
+                else if (line.Equals(nameof(Opcodes.exit)))
+                {
+                    Code.Write(Opcodes.exit);
+                }
                 else if (line.Equals(nameof(Opcodes.inputInt32)))
                 {
                     Code.Write(Opcodes.inputInt32);

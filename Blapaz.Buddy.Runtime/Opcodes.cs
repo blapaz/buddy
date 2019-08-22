@@ -46,5 +46,6 @@
         public static readonly int setClipboard = 208;
         public static readonly int delay = 209;
         public static readonly int write = 210;
+        public static readonly int exit = 211;
     }
 }
