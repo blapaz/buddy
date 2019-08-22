@@ -131,6 +131,16 @@ namespace Blapaz.Buddy.Compiler
                         _currentBlock = new RepeatBlock();
                     }
                 }
+                else if (token.Name == Lexer.TokenType.While)
+                {
+                    WhileBlock whileblock = ParseWhile();
+
+                    if (_currentBlock != null)
+                    {
+                        _blockstack.Push(_currentBlock);
+                        _currentBlock = whileblock;
+                    }
+                }
                 else if (token.Name == Lexer.TokenType.Ident)
                 {
                     // Standard assign, could be string, int, or array
@@ -189,7 +199,7 @@ namespace Blapaz.Buddy.Compiler
                             _currentBlock.AddStmt(block);
                         }
                     }
-                    else if (_currentBlock is RepeatBlock)
+                    else if (_currentBlock is RepeatBlock || _currentBlock is WhileBlock)
                     {
                         Block block = _currentBlock;
 
@@ -283,6 +293,56 @@ namespace Blapaz.Buddy.Compiler
             }
 
             return new Evnt(ident, vars);
+        }
+
+        private WhileBlock ParseWhile()
+        {
+            WhileBlock ret = null;
+            Symbol op = 0;
+
+            if (_tokens.Peek().Name == Lexer.TokenType.LeftParan)
+            {
+                _tokens.pos++;
+            }
+
+            Expr lexpr = ParseExpr();
+
+            if (_tokens.Peek().Name == Lexer.TokenType.DoubleEqual)
+            {
+                op = Symbol.doubleEqual;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.Greater)
+            {
+                op = Symbol.gt;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.GreaterEqual)
+            {
+                op = Symbol.gte;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.Lesser)
+            {
+                op = Symbol.lt;
+                _tokens.pos++;
+            }
+            else if (_tokens.Peek().Name == Lexer.TokenType.LesserEqual)
+            {
+                op = Symbol.lte;
+                _tokens.pos++;
+            }
+
+            Expr rexpr = ParseExpr();
+
+            if (_tokens.Peek().Name == Lexer.TokenType.RightParan)
+            {
+                _tokens.pos++;
+            }
+
+            ret = new WhileBlock(lexpr, op, rexpr);
+
+            return ret;
         }
 
         private IfBlock ParseIf()

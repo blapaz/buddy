@@ -45,6 +45,10 @@ namespace Blapaz.Buddy.Compiler
                 {
                     CompileRepeat((RepeatBlock)statement);
                 }
+                else if (statement is WhileBlock)
+                {
+                    CompileWhile((WhileBlock)statement);
+                }
                 else if (statement is GlobalAssign)
                 {
                     CompileGlobalAssign((GlobalAssign)statement);
@@ -56,6 +60,10 @@ namespace Blapaz.Buddy.Compiler
                 else if (statement is Call)
                 {
                     CompileCall((Call)statement);
+                }
+                else if (statement is Goto)
+                {
+                    Write("goto " + ((Goto)statement).Name);
                 }
                 else if (statement is Return)
                 {
@@ -143,6 +151,21 @@ namespace Blapaz.Buddy.Compiler
             Write(name);
             CompileStmtList(data.statements);
             Write("goto " + name);
+        }
+
+        private void CompileWhile(WhileBlock data)
+        {
+            string name = ".repeat" + repeats.ToString();
+            repeats++;
+
+            Write(name);
+
+            IfBlock ifBlock = new IfBlock(data.leftExpr, data.op, data.rightExpr);
+            ifBlock.statements.AddRange(data.statements);
+            ifBlock.statements.Add(new Goto(name));
+            ifBlock.statements.Add(new EndIf());
+
+            CompileStmtList(new List<Stmt>() { ifBlock });
         }
 
         private void CompileGlobalAssign(GlobalAssign globalAssign)

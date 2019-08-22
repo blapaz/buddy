@@ -66,6 +66,7 @@ namespace Blapaz.Buddy.Compiler
             _tokens.Add(TokenType.ElseIf, "elseif");
             _tokens.Add(TokenType.Else, "else");
             _tokens.Add(TokenType.Repeat, "repeat");
+            _tokens.Add(TokenType.While, "while");
             _tokens.Add(TokenType.Return, "return");
             _tokens.Add(TokenType.Event, "event");
             _tokens.Add(TokenType.StringLiteral, "\".*?\"");

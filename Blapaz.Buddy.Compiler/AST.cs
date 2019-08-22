@@ -79,6 +79,20 @@ namespace Blapaz.Buddy.Compiler
 
     class RepeatBlock : Block { }
 
+    class WhileBlock : Block
+    {
+        public Expr leftExpr;
+        public Symbol op;
+        public Expr rightExpr;
+
+        public WhileBlock(Expr lexpr, Symbol o, Expr rexpr)
+        {
+            leftExpr = lexpr;
+            op = o;
+            rightExpr = rexpr;
+        }
+    }
+
     class GlobalAssign : Stmt
     {
         public string Ident { get; private set;  }
@@ -112,6 +126,16 @@ namespace Blapaz.Buddy.Compiler
         {
             ident = i;
             args = a;
+        }
+    }
+
+    class Goto : Stmt
+    {
+        public string Name { get; private set; }
+
+        public Goto(string name)
+        {
+            Name = name;
         }
     }
 
@@ -204,9 +228,9 @@ namespace Blapaz.Buddy.Compiler
         gte = 8,
         lt = 9,
         lte = 10,
-        leftParan = 7,
-        rightParan = 8,
-        leftBrace = 9,
-        rightbrace = 10
+        leftParan = 11,
+        rightParan = 12,
+        leftBrace = 13,
+        rightbrace = 14
     }
 }
