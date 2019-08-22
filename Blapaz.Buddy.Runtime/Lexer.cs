@@ -137,7 +137,7 @@ namespace Blapaz.Buddy.Runtime
                 }
                 else if (line.StartsWith("if"))
                 {
-                    string op = line.Substring(3);
+                    string op = line.Substring(2);
 
                     if (currentBlock != null)
                     {
@@ -174,9 +174,9 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals(nameof(Opcodes.elseife)))
+                else if (line.StartsWith("elseif"))
                 {
-                    string op = line.Substring(8);
+                    string op = line.Substring(6);
 
                     if (currentBlock != null)
                     {
@@ -213,7 +213,7 @@ namespace Blapaz.Buddy.Runtime
                     Code.Write(blockNumber);
                     blockNumber++;
                 }
-                else if (line.Equals(nameof(Opcodes.els)))
+                else if (line.Equals("else"))
                 {
                     if (currentBlock != null)
                     {

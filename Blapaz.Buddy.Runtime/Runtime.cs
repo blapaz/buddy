@@ -133,7 +133,7 @@ namespace Blapaz.Buddy.Runtime
                         object value1 = _stack.Pop();
                         object value2 = _stack.Pop();
 
-                        if (IfEqual(value1, value2))
+                        if (IfEqual(value2, value1))
                         {
                             if (currentBlock == null)
                             {
@@ -162,7 +162,7 @@ namespace Blapaz.Buddy.Runtime
                         object value1 = _stack.Pop();
                         object value2 = _stack.Pop();
 
-                        if (!IfEqual(value1, value2))
+                        if (!IfEqual(value2, value1))
                         {
                             if (currentBlock == null)
                             {
@@ -191,7 +191,7 @@ namespace Blapaz.Buddy.Runtime
                         object value1 = _stack.Pop();
                         object value2 = _stack.Pop();
 
-                        if (IfGreater(value1, value2))
+                        if (IfGreater(value2, value1))
                         {
                             if (currentBlock == null)
                             {
@@ -220,7 +220,7 @@ namespace Blapaz.Buddy.Runtime
                         object value1 = _stack.Pop();
                         object value2 = _stack.Pop();
 
-                        if (IfGreater(value1, value2) || IfEqual(value1, value2))
+                        if (IfGreater(value2, value1) || IfEqual(value2, value1))
                         {
                             if (currentBlock == null)
                             {
@@ -249,7 +249,7 @@ namespace Blapaz.Buddy.Runtime
                         object value1 = _stack.Pop();
                         object value2 = _stack.Pop();
 
-                        if (IfLesser(value1, value2))
+                        if (IfLesser(value2, value1))
                         {
                             if (currentBlock == null)
                             {
@@ -278,7 +278,7 @@ namespace Blapaz.Buddy.Runtime
                         object value1 = _stack.Pop();
                         object value2 = _stack.Pop();
 
-                        if (IfLesser(value1, value2) || IfEqual(value1, value2))
+                        if (IfLesser(value2, value1) || IfEqual(value2, value1))
                         {
                             if (currentBlock == null)
                             {
@@ -309,7 +309,7 @@ namespace Blapaz.Buddy.Runtime
                             object value1 = _stack.Pop();
                             object value2 = _stack.Pop();
 
-                            if (IfEqual(value1, value2))
+                            if (IfEqual(value2, value1))
                             {
                                 if (currentBlock == null)
                                 {
@@ -345,7 +345,151 @@ namespace Blapaz.Buddy.Runtime
                             object value1 = _stack.Pop();
                             object value2 = _stack.Pop();
 
-                            if (!IfEqual(value1, value2))
+                            if (!IfEqual(value2, value1))
+                            {
+                                if (currentBlock == null)
+                                {
+                                    currentBlock = elseifblock;
+                                }
+                                else
+                                {
+                                    block_stack.Push(currentBlock);
+                                    currentBlock = elseifblock;
+                                }
+
+                                IncVars();
+                                _ifWorked = true;
+                            }
+                            else
+                            {
+                                _code.pos = elseifblock.endBlock;
+                                _ifWorked = false;
+                            }
+                        }
+                        else
+                        {
+                            _code.pos = elseifblock.endBlock;
+                        }
+                    }
+                    else if (opcode == Opcodes.elseifgt)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        ElseIfBlock elseifblock = GetElseIf(blockNumber);
+
+                        if (!_ifWorked)
+                        {
+                            object value1 = _stack.Pop();
+                            object value2 = _stack.Pop();
+
+                            if (IfGreater(value2, value1))
+                            {
+                                if (currentBlock == null)
+                                {
+                                    currentBlock = elseifblock;
+                                }
+                                else
+                                {
+                                    block_stack.Push(currentBlock);
+                                    currentBlock = elseifblock;
+                                }
+
+                                IncVars();
+                                _ifWorked = true;
+                            }
+                            else
+                            {
+                                _code.pos = elseifblock.endBlock;
+                                _ifWorked = false;
+                            }
+                        }
+                        else
+                        {
+                            _code.pos = elseifblock.endBlock;
+                        }
+                    }
+                    else if (opcode == Opcodes.elseifgte)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        ElseIfBlock elseifblock = GetElseIf(blockNumber);
+
+                        if (!_ifWorked)
+                        {
+                            object value1 = _stack.Pop();
+                            object value2 = _stack.Pop();
+
+                            if (IfGreater(value2, value1) || IfEqual(value2, value1))
+                            {
+                                if (currentBlock == null)
+                                {
+                                    currentBlock = elseifblock;
+                                }
+                                else
+                                {
+                                    block_stack.Push(currentBlock);
+                                    currentBlock = elseifblock;
+                                }
+
+                                IncVars();
+                                _ifWorked = true;
+                            }
+                            else
+                            {
+                                _code.pos = elseifblock.endBlock;
+                                _ifWorked = false;
+                            }
+                        }
+                        else
+                        {
+                            _code.pos = elseifblock.endBlock;
+                        }
+                    }
+                    else if (opcode == Opcodes.elseiflt)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        ElseIfBlock elseifblock = GetElseIf(blockNumber);
+
+                        if (!_ifWorked)
+                        {
+                            object value1 = _stack.Pop();
+                            object value2 = _stack.Pop();
+
+                            if (IfLesser(value2, value1))
+                            {
+                                if (currentBlock == null)
+                                {
+                                    currentBlock = elseifblock;
+                                }
+                                else
+                                {
+                                    block_stack.Push(currentBlock);
+                                    currentBlock = elseifblock;
+                                }
+
+                                IncVars();
+                                _ifWorked = true;
+                            }
+                            else
+                            {
+                                _code.pos = elseifblock.endBlock;
+                                _ifWorked = false;
+                            }
+                        }
+                        else
+                        {
+                            _code.pos = elseifblock.endBlock;
+                        }
+                    }
+                    else if (opcode == Opcodes.elseiflte)
+                    {
+                        int blockNumber = _code.ReadInt();
+                        ElseIfBlock elseifblock = GetElseIf(blockNumber);
+
+                        if (!_ifWorked)
+                        {
+                            object value1 = _stack.Pop();
+                            object value2 = _stack.Pop();
+
+                            if (IfLesser(value2, value1) || IfEqual(value2, value1))
                             {
                                 if (currentBlock == null)
                                 {
