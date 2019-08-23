@@ -21,37 +21,57 @@ At its core, Buddy's main purpose is listening for hotkeys that can run a task (
 
 One goal for this project over time, would be to have a well developed and stable language available with many system functions built in.
 
+This project contains a **compiler**, **runtime** and a **bundle** (compiles code then runs it). There are libraries for the compiler and the runtime. The project was structured this way to allow for individual parts to be used or all together, depending on the scenario.
+
 ## Example
 
 ```
 import system
 
+global clips = [ "", "", "", "", "" ]
+
 function Main()
 {
-    PrintLine("Hello World")
+  Message("Buddy script to store the history of the clipboard.")
 }
 
 event Control_C() 
-{
-	PrintLine("Clipboard")
+{ 
+  i = 4
+	
+  while (i > 0)
+  {
+    x = i - 1
+    clips[i] = clips[x]
+    i = x
+  }
+	
+  clips[0] = GetClipboard()
 }
 
-event Control_W() 
-{
-	PrintLine("Control+W")
-	Delay("5000")
-	PrintLine("Screenshot")
-	CaptureScreen("")
-}
+event Control_Shift_F1() { Write(clips[0]) }
+event Control_Shift_F2() { Write(clips[1]) }
+event Control_Shift_F3() { Write(clips[2]) }
+event Control_Shift_F4() { Write(clips[3]) }
+event Control_Shift_F5() { Write(clips[4]) }
 ```
 
 When this script is executed:
-- The main function ```Main()``` will run immediately
-- The event functions ```Control_C()``` and ```Control_W()``` will run when the corresponding key combinations are pressed 
-  - Pressing Control and C will run ```Control_C()```
-  - Pressing Control and W will run ```Control_W()```.
-
+- The import will bring in system functions (ie. ```GetClipboard()```, ```Write()```, ```Message()```)
+- The main function ```Main()``` will run immediately and display a message box
+- The event function ```Control_C()``` will run when the key combination of Control and C is pressed
+  - This will shift all the items in the clipboard history array over so that index 0 is always the most recent item copied.
+- The events ```Control_Shift_<function-key>``` will write out the text saved in the corresponding point in the history.
+  - The text will be pasted out just like the standard windows Control+V combination.
+  
 _For more examples and useful scripts, please refer to the [buddy-scripts repo](https://github.com/blapaz/buddy-scripts)_
+
+## Reference
+The compiler and runtime for this project were based on [Klip](https://github.com/TimeLoad00/Klip). 
+
+Current open source libraries in this project:
+1. [Global Mouse Key Hook](https://github.com/gmamaladze/globalmousekeyhook)
+2. [Input Simulator](https://github.com/michaelnoonan/inputsimulator)
 
 ## Roadmap
 
@@ -59,7 +79,7 @@ See the [open issues](https://github.com/blapaz/buddy/issues) for a list of prop
 
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Right now things are pretty limited, but additions are being made to improve the scripting and applications. This project could be used for practical purposes but is mainly a way to experiment and learn. Feel free to contribute and help grow the project if you are interested.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/<feature>`)
