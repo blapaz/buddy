@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using Blapaz.Buddy.Runtime.Utilities;
@@ -632,6 +633,12 @@ namespace Blapaz.Buddy.Runtime
                     else if (opcode == Opcodes.write)
                     {
                         _inputSimulator.Keyboard.TextEntry(_stack.Pop().ToString());
+                    }
+                    else if (opcode == Opcodes.msg)
+                    {
+                        string value = _stack.Pop().ToString();
+
+                        MessageBox.Show(value);
                     }
                     else if (opcode == Opcodes.exit)
                     {

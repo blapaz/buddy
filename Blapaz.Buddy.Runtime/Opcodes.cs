@@ -47,5 +47,6 @@
         public static readonly int delay = 209;
         public static readonly int write = 210;
         public static readonly int exit = 211;
+        public static readonly int msg = 212;
     }
 }
