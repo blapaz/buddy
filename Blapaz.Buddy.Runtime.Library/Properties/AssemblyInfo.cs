@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("App")]
+[assembly: AssemblyTitle("Blapaz.Buddy.Runtime")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("App")]
+[assembly: AssemblyProduct("Blapaz.Buddy.Runtime")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("63eafad7-d9e6-412a-b954-751cd90ec02f")]
+[assembly: Guid("9b2367e8-fe7b-4e22-bb74-f5e05ab12339")]
 
 // Version information for an assembly consists of the following four values:
 //

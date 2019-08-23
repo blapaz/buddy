@@ -1,45 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using BuddyCompilerLibrary = Blapaz.Buddy.Compiler.Library.Program;
 
 namespace Blapaz.Buddy.Compiler
 {
-    public class Program
+    class Program
     {
-        public static List<string> Imports { get; private set; }
-
-        public static string Compile(string scriptFile)
+        static void Main(string[] args)
         {
-            Imports = new List<string>();
-            Lexer lexer = new Lexer(File.ReadAllText(scriptFile));
-            List<Token> tokens = new List<Token>();
-
-            Token token;
-            while ((token = lexer.GetToken()).Name != Lexer.TokenType.EOF)
+            if (args.Length == 0)
             {
-                if (token.Name != Lexer.TokenType.Whitespace && token.Name != Lexer.TokenType.NewLine && 
-                    token.Name != Lexer.TokenType.Comment && token.Name != Lexer.TokenType.Undefined)
+                Console.WriteLine("No script file not found");
+            }
+            else
+            {
+                string scriptFile = args[0];
+
+                if (File.Exists(scriptFile))
                 {
-                    tokens.Add(token);
+                    if (Path.GetExtension(scriptFile).Equals(".bud"))
+                    {
+                        Stopwatch watch = new Stopwatch();
+                        watch.Start();
+
+                        string compiledCode = BuddyCompilerLibrary.Compile(scriptFile);
+
+                        using (FileStream fs = new FileStream(Path.Combine(Path.GetDirectoryName(scriptFile), Path.GetFileNameWithoutExtension(scriptFile) + ".buddy"), FileMode.Create))
+                        using (BinaryWriter bw = new BinaryWriter(fs))
+                        {
+                            bw.Write(compiledCode);
+                        }
+
+                        watch.Stop();
+
+                        Console.WriteLine($"'{Path.GetFileName(scriptFile)}' compiled in {watch.ElapsedMilliseconds} ms");
+                    }
+                    else if (Path.GetExtension(scriptFile).Equals(".buddy"))
+                    {
+                        Console.WriteLine($"{Path.GetFileName(scriptFile)} is already compiled");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Only files with the *.bud extension are compilable");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("File path specified is invalid");
                 }
             }
-
-            tokens.Add(new Token(Lexer.TokenType.EOF, "EOF"));
-
-            Parser parser = new Parser(new TokenList(tokens));
-            Compiler compiler = new Compiler(parser.Tree);
-
-            string compiledCode = compiler.Code;
-
-            foreach (string import in Imports)
-            {
-                using (StreamReader s = new StreamReader(Path.Combine(Path.GetDirectoryName(scriptFile), import + ".buddy")))
-                {
-                    compiledCode += Environment.NewLine + s.ReadToEnd();
-                }
-            }
-
-            return compiledCode;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace App
+﻿namespace Blapaz.Buddy.Bundle
 {
     partial class FormMain
     {

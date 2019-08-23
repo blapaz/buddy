@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Blapaz.Buddy.Compiler
+namespace Blapaz.Buddy.Compiler.Library
 {
     class Compiler
     {

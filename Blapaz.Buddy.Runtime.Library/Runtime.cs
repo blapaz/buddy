@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Blapaz.Buddy.Runtime.Utilities;
 using WindowsInput;
 
-namespace Blapaz.Buddy.Runtime
+namespace Blapaz.Buddy.Runtime.Library
 {
     class Runtime
     {

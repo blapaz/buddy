@@ -2,16 +2,19 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
-using BuddyCompiler = Blapaz.Buddy.Compiler.Program;
-using BuddyRuntime = Blapaz.Buddy.Runtime.Program;
+using BuddyCompilerLibrary = Blapaz.Buddy.Compiler.Library.Program;
+using BuddyRuntimeLibrary = Blapaz.Buddy.Runtime.Library.Program;
 using System.Diagnostics;
 
-namespace App
+namespace Blapaz.Buddy.Bundle
 {
     public partial class FormMain : Form
     {
         private NotifyIcon _notifyIcon;
-        private Config _config;
+
+        private bool _shouldSilentStart = false;
+        private bool _shouldOutputCompiled = false;
+        
 
         public FormMain()
         {
@@ -21,7 +24,6 @@ namespace App
             _notifyIcon.BalloonTipTitle = "Buddy";
             _notifyIcon.BalloonTipText = "Buddy is running in the background";
             _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-            _notifyIcon.ContextMenuStrip.Items.Add("Config", null, NotifyIconConfig_Click);
             _notifyIcon.ContextMenuStrip.Items.Add("Exit", null, NotifyIconExit_Click);
 
             InitializeComponent();
@@ -36,15 +38,26 @@ namespace App
             {
                 string exePath = args[0];
                 string scriptFile = args[1];
-                _config = new Config(Path.Combine(Path.GetDirectoryName(scriptFile), "buddy.cfg"));
+
+                foreach (string arg in args)
+                {
+                    if (arg.Equals("-s"))
+                    {
+                        _shouldSilentStart = true;
+                    }
+                    else if (arg.Equals("-o"))
+                    {
+                        _shouldOutputCompiled = true;
+                    }
+                }
 
                 if (File.Exists(scriptFile))
                 {
                     if (Path.GetExtension(scriptFile).Equals(".bud"))
                     {
-                        string compiledCode = BuddyCompiler.Compile(scriptFile);
+                        string compiledCode = BuddyCompilerLibrary.Compile(scriptFile);
 
-                        if (_config.ShouldOutputCompiled)
+                        if (_shouldOutputCompiled)
                         {
                             using (FileStream fs = new FileStream(Path.Combine(Path.GetDirectoryName(scriptFile), Path.GetFileNameWithoutExtension(scriptFile) + ".buddy"), FileMode.Create))
                             using (BinaryWriter bw = new BinaryWriter(fs))
@@ -53,14 +66,11 @@ namespace App
                             }
                         }
 
-                        if (!_config.ShouldCompileOnly)
-                        {
-                            BuddyRuntime.Run(compiledCode);
-                        }
+                        BuddyRuntimeLibrary.Run(compiledCode);
                     }
                     else if (Path.GetExtension(scriptFile).Equals(".buddy"))
                     {
-                        BuddyRuntime.Run(File.ReadAllText(scriptFile));
+                        BuddyRuntimeLibrary.Run(File.ReadAllText(scriptFile));
                     }
                     else
                     {
@@ -75,18 +85,6 @@ namespace App
         }
 
         private void NotifyIconExit_Click(object sender, EventArgs e) => Application.Exit();
-        private void NotifyIconConfig_Click(object sender, EventArgs e) => ModifyConfigFile();
-
-        private void ModifyConfigFile()
-        {
-            if (!File.Exists(_config.ConfigFile))
-            {
-                File.Create(_config.ConfigFile);
-            }
-
-            MessageBox.Show("Be sure to restart application after making changes to config file", "Restart After Changes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            Process.Start(_config.ConfigFile);
-        }
 
         protected override void OnVisibleChanged(EventArgs e)
         {
@@ -94,7 +92,7 @@ namespace App
             this.Visible = false;
             _notifyIcon.Visible = true;
 
-            if (!_config.ShouldSilentStart)
+            if (!_shouldSilentStart)
             {
                 _notifyIcon.ShowBalloonTip(2000);
             }

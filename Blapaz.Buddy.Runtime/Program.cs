@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using Gma.System.MouseKeyHook;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Blapaz.Buddy.Runtime
 {
-    public class Program
+    static class Program
     {
-        public static void Run(string compiledCode)
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-            Runtime runtime = new Runtime(compiledCode);
-
-            foreach (Func evnt in Runtime.Events)
-            {
-                string combination = evnt.name.Replace("_", "+");
-
-                Hook.GlobalEvents().OnCombination(new Dictionary<Combination, Action>
-                {
-                    {Combination.FromString(combination), () => { Runtime.Run($"{combination.Replace("+", "_")}"); }}
-                });
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new FormMain());
         }
     }
 }

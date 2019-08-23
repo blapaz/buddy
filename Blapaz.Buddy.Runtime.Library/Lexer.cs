@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Blapaz.Buddy.Runtime
+namespace Blapaz.Buddy.Runtime.Library
 {
     class Lexer
     {     

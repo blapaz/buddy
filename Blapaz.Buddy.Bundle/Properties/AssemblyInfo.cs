@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BuddyCompiler")]
+[assembly: AssemblyTitle("BuddyBundle")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BuddyCompiler")]
+[assembly: AssemblyProduct("BuddyBundle")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7f595d70-7479-4d31-9f0e-f796a95a13f3")]
+[assembly: Guid("63eafad7-d9e6-412a-b954-751cd90ec02f")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Blapaz.Buddy.Runtime
+namespace Blapaz.Buddy.Runtime.Library
 {
     class Call
     {

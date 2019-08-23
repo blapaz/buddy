@@ -1,4 +1,4 @@
-﻿namespace Blapaz.Buddy.Runtime
+﻿namespace Blapaz.Buddy.Runtime.Library
 {
     class Var
     {

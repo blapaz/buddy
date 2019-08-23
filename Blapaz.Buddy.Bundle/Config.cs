@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace App
+namespace Blapaz.Buddy.Bundle
 {
     public class Config
     {

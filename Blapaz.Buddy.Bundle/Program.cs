@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace App
+namespace Blapaz.Buddy.Bundle
 {
     static class Program
     {

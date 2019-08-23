@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Blapaz.Buddy.Compiler
+namespace Blapaz.Buddy.Compiler.Library
 {
     public class Lexer
     {
