@@ -207,16 +207,40 @@ namespace Blapaz.Buddy.Compiler.Library
             Tokens = tokens;
         }
 
-        public Token GetToken()
+        public Token Next()
         {
             Token ret = Tokens[pos];
             pos++;
             return ret;
         }
 
-        public Token Peek()
+        public void Move(int offset = 1)
         {
+            pos += offset;
+        }
+
+        public Token Skip(int offset)
+        {
+            pos += offset;
             return Tokens[pos];
+        }
+
+        public Token Peek(int offset = 0)
+        {
+            return Tokens[pos + offset];
+        }
+
+        public bool MoveIfPeekEquals(Lexer.TokenType tokenType)
+        {
+            if (Peek().Name.Equals(tokenType))
+            {
+                Move();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
