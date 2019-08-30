@@ -9,6 +9,8 @@
     <br />
     <a href="https://github.com/blapaz/buddy/issues/new">Request Feature</a>
     ·
+    <a href="https://github.com/blapaz/buddy/wiki">Wiki</a>
+    ·
     <a href="https://github.com/blapaz/buddy/issues/new">Report Bug</a>
   </p>
 </p>
@@ -17,7 +19,7 @@
 
 Buddy is an experimental project designed to make interaction with Windows events easier. Scripts can be written in a simple language to interact with these Windows events. 
 
-At its core, Buddy's main purpose is listening for hotkeys that can run a task (eg. taking a screenshot when a specific hotkey combination is pressed). However, the scripting can be used to extended further beyond that. 
+At its core, Buddy's main purpose is listening for hotkeys that can run a task (eg. taking a screenshot when a specific hotkey combination is pressed). However, the scripting can be used to extended further beyond that. Refer to the [wiki](https://github.com/blapaz/buddy/wiki) for more information.
 
 One goal for this project over time, would be to have a well developed and stable language available with many system functions built in.
 
